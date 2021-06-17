@@ -78,7 +78,6 @@ io.on("connection", (socket) => {
         sc.listen()
     } catch (err) {
         socket._error(err)
-        throw err
     }
 
     socket.on("error", (err) => {

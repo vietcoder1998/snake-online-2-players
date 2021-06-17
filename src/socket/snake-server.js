@@ -106,6 +106,10 @@ class SnakeServer {
         })
     }
 
+    event$(event, callBack) {
+        this.socket.on(event, (...args) => callBack(...args))
+    }
+
     emit$(room, event) {
         this.io.to(room.getPlayerIds()).emit(skEvent.UPDATE_ROOM, room)
     }

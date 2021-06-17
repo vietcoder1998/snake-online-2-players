@@ -65,15 +65,13 @@ class GameController{
     directGameInRoom(d, roomId, playerId, next) {
         const game = this.getGameInRoom(roomId, { ownerId: playerId })
         game.directionSnake(d)
-
-        this.updateRoom(roomId, next)
     }
 
     startGamesInRoom(roomId, next) {
         const games = this.getGameInRoom(roomId, { isArr: true })
         games.forEach(game => game.restart())
 
-        this.updateRoom(roomId, next)
+        this.runGameLoop(roomId, next)
     };
 
     pauseGamesInRoom(roomId, next) {
@@ -82,19 +80,16 @@ class GameController{
             const pause = game.pause
             game.pause = !pause
         })
-
-        this.updateRoom(roomId, next , true)
     };
 
-    updateRoom(roomId, next, pause) {
-        console.log('room_id ->', roomId)
-        console.log('room_list ->', this.rooms)
+    runGameLoop(roomId, next, pause) {
         const room = this.getRoom(roomId)
-
-        console.log('update_room ->', room)
-        room.interval.clearRuntime()
-        room.interval.execRuntime(() => room.runSnakeGame(() => next(room)))
+        room.interval.execRuntime(() => room.runSnakeGame(() => next(room)), 0)
     };
+
+    cancelGame(roomId, next) {
+        room.interval.clearRuntime()
+    }
 
     resetGamesInRoom(roomId, next) {
         const room = this.getRoom(roomId)
@@ -105,7 +100,7 @@ class GameController{
             room.addGame(playerId, game)
         })
 
-        this.updateRoom(roomId, next, true)
+        this.runGameLoop(roomId, next, true)
     }
 
     findRandomUser(id) {

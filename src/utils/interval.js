@@ -17,7 +17,7 @@ module.exports = class Interval {
         this.time = time
     }
 
-    execRuntime(next) {
+    execRuntime(next, time) {
         this.lastFunction = next
         this.runtime = setInterval(() => {
             if (!next && !this.lastFunction) {
@@ -27,7 +27,7 @@ module.exports = class Interval {
                 this.lastFunction()
             } else
             next()
-        }, this.time);
+        }, time || this.time);
     }
     
     clearRuntime(next) {
