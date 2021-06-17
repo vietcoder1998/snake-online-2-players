@@ -88,7 +88,9 @@ class GameController{
     };
 
     cancelGame(roomId, next) {
+        const room = this.getRoom(roomId)
         room.interval.clearRuntime()
+        room.runSnakeGame(() => next(room))
     }
 
     resetGamesInRoom(roomId, next) {
@@ -99,8 +101,7 @@ class GameController{
             const game = new GamePlay(playerId)
             room.addGame(playerId, game)
         })
-
-        this.runGameLoop(roomId, next, true)
+        this.cancelGame(roomId, next)
     }
 
     findRandomUser(id) {
