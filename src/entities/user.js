@@ -17,4 +17,4 @@ class UserEntity {
     password
 }
 
-module.exports = UserEntity
+export default UserEntity

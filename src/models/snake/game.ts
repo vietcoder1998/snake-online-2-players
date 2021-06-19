@@ -1,35 +1,36 @@
 'use strict'
 
-const Interval = require("../utils/interval");
-const GameMap = require("./map");
-const Snake = require("./snake");
+import { Direction } from "../../enums"
+import Food from "./food"
+import GameMap from "./map"
+import Snake from "./snake"
 
 class GamePlay {
     id
     ownerId
     snake = new Snake()
     map = new GameMap()
-    foods = []
+    foods: Food[]
     score = 0
     end = false
     pause = true
 
-    constructor(ownerId) {
+    constructor(ownerId: string) {
         this.id = ownerId + new Date().getTime().toString()
         this.ownerId = ownerId + ''
         this.foods = [{ x: 2, y: 3 }, { x: 6, y: 8 }, { x: 5, y: 10 }]
     }
-    
+
     restart() {
         this.pause = false
         this.end = false
     }
 
-    setPause(pause) {
+    setPause(pause: boolean) {
         this.pause = pause
     }
 
-    pause() {
+    pauseGame() {
        this.pause = true
     }
 
@@ -44,19 +45,19 @@ class GamePlay {
                 this.foods.forEach((f, i) => {
                     const cc = this.snake.checkCollision(f)
                     if (cc.isCollision) {
-                        console.log('eat ->', i)
                         this.snake.eat(cc.food)
                         this.foods.splice(i, 1)
                         this.score += 1
                     }
-                });
+                })
                 this.snake.moving()
-            } else this.endGame()
+            }
+            this.endGame()
         }
 
     }
 
-    directionSnake(d) {
+    directionSnake(d: Direction) {
         this.snake.direction(d)
     }
 
@@ -64,14 +65,6 @@ class GamePlay {
         this.end = true
         this.setPause(true)
     }
-
-    getGames(isArr) {
-        if (isArr) {
-            return this.games
-        } else {
-            return Object.values(this.games)
-        }
-    }
 }
 
-module.exports = GamePlay
+export default GamePlay

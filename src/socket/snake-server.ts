@@ -1,21 +1,22 @@
 'use strict'
 
-const Code = require("../const/code")
-const skEvent = require("../const/socket")
-const GameController = require("../controllers/game-controller")
-const Room = require("../models/room")
-const eventHandle = require("../utils/eventHandle")
-class SnakeServer {
-    socket
-    gameController = new GameController()
-    io
+import { Server, Socket } from "socket.io"
+import Code from "../const/code"
+import skEvent from "../const/socket"
+import GameController from "../controllers/snake-controller"
+import Room from "../models/common/room"
 
-    constructor(io) {
+class SnakeServer {
+    socket: Socket
+    gameController: GameController = new GameController()
+    io: Server
+
+    constructor(io: Server) {
         this.io = io
     }
 
-    setSocket(s) {
-        this.socket = s 
+    setSocket(s: Socket) {
+        this.socket = s
     }
 
     listen() {
@@ -61,7 +62,7 @@ class SnakeServer {
         })
     }
 
-    leaveInterval(ids) {
+    leaveInterval(ids: string[]) {
         if (!ids || ids.length === 0) {
             throw new Error('no id in ids to leaving')
         } else {
@@ -72,16 +73,13 @@ class SnakeServer {
         }
     }
 
-    registerInterval([ids]) {
-    }
-
     getRoomInfo() {
         this.socket.on(skEvent.QUERY_ROOM, (roomId) => {
             const room = this.gameController.getRoom(roomId)
             this.socket.emit(skEvent.QUERY_ROOM, room)
         })
     }
-    
+
     startGame() {
         this.socket.on(skEvent.START_GAME, (roomId) => {
             this.gameController.startGamesInRoom(roomId, (room) => this.emit$(room))
@@ -102,17 +100,15 @@ class SnakeServer {
 
     directionGame() {
         this.socket.on(skEvent.DIRECTION, (d, roomId, playerId) => {
-            this.gameController.directGameInRoom(d, roomId, playerId, (room) => this.emit$(room))
+            this.gameController.directGameInRoom(
+                d, roomId, playerId,
+            )
         })
     }
 
-    event$(event, callBack) {
-        this.socket.on(event, (...args) => callBack(...args))
-    }
-
-    emit$(room, event) {
+    emit$(room: Room, event?: string) {
         this.io.to(room.getPlayerIds()).emit(skEvent.UPDATE_ROOM, room)
     }
 }
 
-module.exports = SnakeServer
+export default SnakeServer

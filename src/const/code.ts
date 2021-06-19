@@ -5,4 +5,4 @@ const Code = {
     NOT_FOUND: 404, 
 }
 
-module.exports = Code
+export default Code

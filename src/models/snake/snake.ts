@@ -1,16 +1,7 @@
 "use strict"
 
-const Direction = {
-    RIGHT: 'right',
-    LEFT: 'left',
-    UP: 'up',
-    DOWN: 'down'
-}
-
-const State = {
-    STOP: 'stop',
-    MOVE: 'move'
-}
+import { Direction } from "../../enums"
+import Food from "./food"
 
 class Snake {
     body = [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 2, y: 0 }]
@@ -32,7 +23,7 @@ class Snake {
         this.body.shift()
     }
 
-    direction(d) {
+    direction(d: Direction) {
         switch (d) {
             case Direction.LEFT:
                 this.vector = {x: -1, y: 0}
@@ -52,11 +43,11 @@ class Snake {
         }
     }
 
-    eat(f) {
+    eat(f: Food) {
         this.body.push(f)
     }
 
-    checkCollision = function (f) {
+    checkCollision(f: Food) {
         let isCollision = false
         const head = this.body[this.body.length - 1]
         if (head.x === f.x && head.y === f.y) {
@@ -75,4 +66,4 @@ class Snake {
 
 }
 
-module.exports = Snake
+export default Snake

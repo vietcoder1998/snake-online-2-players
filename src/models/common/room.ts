@@ -1,26 +1,25 @@
-'user strict'
-
-const Interval = require("../utils/interval")
-const GamePlay = require("./game")
+import Interval from "../../utils/interval"
+import GamePlay from "../snake/game"
+import User from "./user"
 
 class Room {
-    id
-    ownerId
-    players = {}
-    playerIds = []
-    games = {}
+    id: string
+    ownerId: string
+    players: Record<string, User>
+    playerIds: string[]
+    games: Record<string, GamePlay>
     interval = new Interval(500)
 
-    constructor(o) {
-        this.ownerId = o + ""
-        this.id = o + ""
+    constructor(o: string) {
+        this.ownerId = o
+        this.id = o
     }
 
-    removeUser(userId, next) {
-        if (this.userId === this.ownerId) {
+    removeUser(userId: string, next: (...args: any[]) => void) {
+        if (userId === this.ownerId) {
             next(false)
         } else {
-            delete this.user[userId]
+            delete this.players[userId]
             this.playerIds.forEach((playerId, i) => {
                 if (userId === playerId) {
                     this.playerIds.splice(i, 1)
@@ -29,12 +28,7 @@ class Room {
         }
     }
 
-    createGame(ownerId) {
-        const game = new GamePlay(ownerId)
-        this.append(ownerId, game)
-    }
-    
-    addGame(ownerId, g) {
+    addGame(ownerId: string, g: GamePlay) {
         Object.assign(this.games, {[ownerId]: g})
     }
 
@@ -42,45 +36,41 @@ class Room {
         return this.playerIds
     }
 
-    runSnakeGame(next) {
+    runSnakeGame(next: (...args: any[]) => void ) {
         const games = this.getGames(true)
-        games.forEach((game) => game.runSnake())
+        if (games && Array.isArray(games)) {
+            games.forEach((game: GamePlay) => game.runSnake())
+        }
         next()
     }
 
-    removeGame(gId) {
+    removeGame(gId: string) {
         delete this.games[gId]
     }
 
-    getGame(gId) {
+    getGame(gId: string) {
         return this.games[gId]
     }
 
-    createGame(ownerId) {
+    createGame(ownerId: string) {
         const game = new GamePlay(ownerId)
         this.addGame(ownerId, game)
     }
-    
-    addUser(id, u) {
+
+    addUser(id: string, u: User) {
         Object.assign(this.players, { [id]: u })
         this.playerIds.push(u.id)
         this.createGame(id)
     }
 
-    removeUser(userId) {
-        delete this.user[userId]
-        delete this.games[userId]
-    }
-
-    getGames(iArr) {
-        if (iArr) {
+    getGames(a: boolean){
+        if (a) {
             return Object.values(this.games)
-        } else {
-            return this.games
         }
+        return this.games
     }
 
-    getPlayers(iA) {
+    getPlayers(iA: boolean) {
         if (iA) {
             return Object.values(this.players)
         } else {
@@ -93,4 +83,4 @@ class Room {
     }
 }
 
-module.exports = Room
+export default Room

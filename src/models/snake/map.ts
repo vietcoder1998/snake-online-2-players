@@ -5,13 +5,13 @@ class GameMap {
     h = 20
     s = 10
 
-    setW(w) {
+    setW(w: number) {
         this.w = w
     }
 
-    setH(h) {
+    setH(h: number) {
         this.h = h
     }
 }
 
-module.exports =  GameMap
+export default GameMap

@@ -16,4 +16,4 @@ const skEvent = {
     RESET: 'reset'
 }
 
-module.exports = skEvent
+export default skEvent

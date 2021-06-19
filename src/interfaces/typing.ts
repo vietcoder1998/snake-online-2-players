@@ -1,0 +1,1 @@
+export type Next<T> = (...args: any[]) => T | void

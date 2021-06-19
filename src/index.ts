@@ -1,9 +1,14 @@
+import { Errback, NextFunction, Request, Response } from "express"
+import { Socket } from "socket.io"
+import { GameType } from "./enums"
+import User from "./models/common/user"
+
 const express = require('express')
 const http = require('http')
-const SnakeServer = require('./socket/snake-server')
+import SnakeServer from './socket/snake-server'
 const mysql = require('mysql')
 const fs = require('fs')
-const { getIp } = require('./utils/ip')
+import { getIp } from './utils/ip'
 
 const app = express()
 
@@ -14,17 +19,17 @@ const con = mysql.createConnection({
     user: 'root',
 })
 
-con.connect(function (err) {
+con.connect(function (err: Error) {
     if (err) {
         console.log(err)
         throw err
     }
 })
 
-con.query('USE snake', function (err, result) {
+con.query('USE snake', function (err: Error, result: any) {
     console.log(err, result)
     if (!result) {
-    con.query('CREATE DATABASE snake', function (err, result) {
+    con.query('CREATE DATABASE snake', function (err: Error, result: any) {
         if (err) {
             console.log(err)
             throw err
@@ -34,28 +39,28 @@ con.query('USE snake', function (err, result) {
     }
 })
 
-app.get('/', (req, res, next) => {
+app.get('/', (req: Request, res: Response, next: NextFunction) => {
     res.sendFile(__dirname + '/public/index.html')
 })
 
-app.get('/:name', (req, res, next) => {
+app.get('/:name', (req: Request, res: Response, next: NextFunction) => {
     res.sendFile(__dirname + `/public/${req.params.name}`)
 })
 
-app.get('/v1/user', (req, res, next) => {
-    fs.readFile(__dirname + '/json/user.json', (err, data) => {
+app.get('/v1/user', (req: Request, res: Response, next: NextFunction) => {
+    fs.readFile(__dirname + '/json/user.json', (err: Error, data: any) => {
         res.send(JSON.parse(data.toString()))
     })
 })
 
-app.get('/v1/user/:id', (req, res, next) => {
-    fs.readFile(__dirname + '/json/user.json', (err, data) => {
+app.get('/v1/user/:id', (req: Request, res: Response, next: NextFunction) => {
+    fs.readFile(__dirname + '/json/user.json', (err: Error, data: any) => {
         const users =  JSON.parse(data.toString())
         res.send(users[req.params.id])
     })
 })
 
-app.use((err, req, res, next) => {
+app.use((err: Errback, req: Request, res: Response, next: NextFunction) => {
     if (err) {
         res.status(404).end('404 not found')
         throw err
@@ -69,12 +74,13 @@ const io = require('socket.io')(server, {
 
 const sc = new SnakeServer(io)
 
-io.on("connection", (socket) => {
-    const id = socket.handshake.auth.id
+io.on("connection", (socket: Socket) => {
+    const { id, avatar, username, token } = socket.handshake.auth
+    console.log( socket.handshake.auth)
     try {
         socket.join(id)
         sc.setSocket(socket)
-        sc.gameController.addUser(socket.handshake.auth)
+        sc.gameController.addUser(new User(id, avatar, username, GameType.SNAKE))
         sc.listen()
     } catch (err) {
         socket._error(err)
@@ -83,14 +89,15 @@ io.on("connection", (socket) => {
     socket.on("error", (err) => {
         console.log(err)
     })
-    
+
     socket.on("disconnect", (reason) => {
         sc.gameController.removeUser(id)
+        sc.gameController.removeRuntime(id)
         socket.leave(id)
     })
 });
 
-server.listen(3007, e => {
+server.listen(3007, (e: Error) => {
     const ips = getIp()
     console.log(`http://${ips[1]}:${3007}`, )
     if (e) {

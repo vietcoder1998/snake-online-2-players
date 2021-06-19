@@ -1,28 +1,28 @@
+import { Direction, GameType } from "../enums"
+import { Next } from "../interfaces/typing"
+import Room from "../models/common/room"
+import User from "../models/common/user"
+import GamePlay from "../models/snake/game"
+import Interval from "../utils/interval"
+
 const Code = require("../const/code")
-const GamePlay = require("../models/game")
-const Room = require("../models/room")
-const Interval = require("../utils/interval")
 
 class GameController{
-    rooms = {}
-    users = {}
-    queue = []
-    userIntervals = {}
-    runtime = null
+    rooms: Record<string, Room>
+    users: Record<string, User>
+    queue: User[]
+    userIntervals: Record<string, Interval> = {}
+    runtime: any
 
-    constructor(id) {
-        this.id = new Date().getTime() + id
-    }
-
-    createRoom(userId) {
+    createRoom(userId: string) {
         if (!userId) {
-            throw new Exception('no userId to create room')
+            throw new Error('no userId to create room')
         }
         Object.assign(this.rooms, { [userId]: new Room(userId) })
         console.log('rooms ->', this.rooms)
     }
 
-    addUser(user) {
+    addUser(user: User) {
         const id = user.id + ''
         user.id = id
 
@@ -31,69 +31,80 @@ class GameController{
         console.log('user ->', this.users)
     }
 
-    addRoom(r) {
+    addRoom(r: Room) {
         Object.assign(this.rooms, {[r.id]: r})
     }
 
-    removeUser(id) {
+    removeUser(id: string) {
         if (!id) {
-            throw new Exception('No userId to remove')
+            throw new Error('No userId to remove')
         }
         delete this.users[id]
         delete this.userIntervals[id]
         console.log('remove user ->', this.users)
     }
 
-    joinQueue(id) {
+    removeRuntime(userId: string) {
+        delete this.userIntervals[userId]
+    }
+
+    joinQueue(id: string) {
         const user = this.users[id]
         this.queue.push(user)
     }
 
-    leaveQueue(ids) {
-        if (!ids) {
-            throw new Exception('No Ids in queue')
-        }
-        ids && ids.length > 0 && ids.forEach(id => {
-            this.queue.forEach((user, i) => {
-                if (user.id === id) {
-                    this.queue.splice(i, 1)
-                }
+    leaveQueue(ids: string[]) {
+        if (!ids || ids.length === 0) {
+            throw new Error('No Ids in queue')
+        } else {
+            ids.forEach(id => {
+                this.queue.forEach((user, i) => {
+                    if (user.id === id) {
+                        this.queue.splice(i, 1)
+                    }
+                })
             })
-        })
+        }
     }
 
-    directGameInRoom(d, roomId, playerId, next) {
+    directGameInRoom(d: Direction, roomId: string, playerId: string) {
         const game = this.getGameInRoom(roomId, { ownerId: playerId })
-        game.directionSnake(d)
+        if (game && game instanceof GamePlay){
+            game.directionSnake(d)
+        }
     }
 
-    startGamesInRoom(roomId, next) {
+    startGamesInRoom(roomId: string, next: (...args: any[]) => void) {
         const games = this.getGameInRoom(roomId, { isArr: true })
-        games.forEach(game => game.restart())
+        if (games && Array.isArray(games)) {
+            games.forEach((game: GamePlay) => game.restart())
+        }
 
         this.runGameLoop(roomId, next)
     };
 
-    pauseGamesInRoom(roomId, next) {
+    pauseGamesInRoom(roomId: string, next: (room: Room, playerIds: string[]) => void) {
         const games = this.getGameInRoom(roomId, {isArr: true})
-        games.forEach(game => {
-            const pause = game.pause
-            game.pause = !pause
-        })
+        if (games && games && Array.isArray(games)) {
+            games?.forEach((game: GamePlay) => {
+                const pause = game.pause
+                game.pause = !pause
+            })
+        }
     };
 
-    runGameLoop(roomId, next, pause) {
+    runGameLoop(roomId: string, next: (...args: any[]) => void) {
         const room = this.getRoom(roomId)
-        room.interval.execRuntime(() => room.runSnakeGame(() => next(room)), 0)
+        room.interval.execRuntime(() => room.runSnakeGame(() => next(room, room.playerIds)))
     };
 
-    cancelGame(roomId, next) {
+    cancelGame(roomId: string, next : (room: Room) => void) {
         const room = this.getRoom(roomId)
         room.interval.clearRuntime()
         room.runSnakeGame(() => next(room))
     }
 
-    resetGamesInRoom(roomId, next) {
+    resetGamesInRoom(roomId: string, next: Next<void>) {
         const room = this.getRoom(roomId)
 
         room.clearGame()
@@ -104,11 +115,14 @@ class GameController{
         this.cancelGame(roomId, next)
     }
 
-    findRandomUser(id) {
+    findRandomUser(id: string) {
         const length = this.queue.length
         let code = Code.NOT_FOUND
-        let user = {
-            id: null
+        let user: User = {
+            id: null,
+            username: null,
+            avatar: null,
+            gameType: GameType.SNAKE
         }
         let r = 0
         const finder = this.users[id]
@@ -127,7 +141,6 @@ class GameController{
                     r++
                     user = this.queue[r]
                 } while (user && id === user.id && !!user.id && r < length)
-                
                 if (user && !!user.id) {
                     code = Code.SUCCESS
                 };
@@ -138,64 +151,62 @@ class GameController{
             code,
             user,
             finder,
-        }    
+        }  
     }
 
-    deleteRoom(roomId) {
+    deleteRoom(roomId: string) {
         delete this.rooms[roomId]
     }
 
-    getRoom(roomId) {
+    getRoom(roomId: string) {
         if (!roomId ) {
-            throw new Exception('no roomId')
+            throw new Error('no roomId')
         }
 
         if (!this.rooms[roomId]) {
-            throw new Exception('no room`s find')
+            throw new Error('no room`s find')
         }
         return this.rooms[roomId]
     }
 
-    getGameInRoom(roomId, { gameId, ownerId, isArr }) {
+    getGameInRoom(roomId: string, { gameId, ownerId, isArr }: {gameId?: string, ownerId?: string, isArr?: boolean }) {
         if (!roomId) {
-            throw new Exception('No roomId')
+            throw new Error('No roomId')
         }
 
         const room = this.rooms[roomId]
 
         if (!room) {
-            console.log('rooms ->' ,this.rooms)
-            throw new Exception('No room in room`s list')
+            throw new Error('No room in room`s list')
         }
 
         const games = room.games
 
         if (gameId) {
-            return this.game[gameId]
-        } 
-        
+            return this.rooms[roomId].getGame(gameId)
+        }
+
         if (ownerId) {
             const game = Object.values(games).filter(game => game.ownerId === ownerId)[0]
-
             return game
         }
 
         if (!gameId && !ownerId && isArr) {
             return Object.values(games).map(game => game)
         }
-        
+
         if (!gameId && !ownerId ) {
             return room.games
         }
     }
 
-    findUser(userId) {
+    findUser(userId: string) {
         if (!userId || !this.users[userId]) {
-            throw new Exception('no userId to find in user`s list')
+            throw new Error('no userId to find in user`s list')
         } else {
             return this.users[userId]
         }
     }
 }
 
-module.exports = GameController
+export default GameController
