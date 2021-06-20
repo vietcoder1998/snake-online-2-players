@@ -8,6 +8,7 @@ export enum Direction {
     LEFT = 'left',
     UP = 'up',
     DOWN = 'down',
+    SHOT = 'shot',
 }
 
 export enum SkCode {

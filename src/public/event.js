@@ -11,34 +11,34 @@ const client = io.connect(`http://192.168.1.55:3007`, {
     }
 });
 
-const SkEvent = {
-    START_GAME: 'start_game',
-    DIRECTION: 'direction',
-    PAUSING: 'pausing',
-    NEW_GAME: 'new_game',
-    QUERY_GAME: 'query_game',
-    ALL_GAME: 'all_game',
-    JOIN_SNAKE_QUEUE: 'join_snake_queue',
-    MATCH_USER: 'match_user',
-    LEAVE_QUEUE: 'leave_queue',
-    UPDATE_ROOM: 'update_room',
-    GAME_UPDATE: 'game_update',
-    CREATE_NEW_GAME: 'create_new_game',
-    RESET_GAME: 'RESET_GAME',
+const SkEventSnake = {
+    START_GAME_SNAKE: 'start_game_snake',
+    DIRECTION_SNAKE: 'direction_snake',
+    PAUSING_SNAKE: 'pausing_snake',
+    NEW_GAME_SNAKE: 'new_game_snake',
+    ALL_GAME_SNAKE: 'all_game_snake',
+    JOIN_SNAKE_QUEUE: 'join_snake_queue_snake',
+    MATCH_USER_SNAKE: 'match_user_snake',
+    LEAVE_QUEUE_SNAKE: 'leave_queue_snake',
+    UPDATE_ROOM_SNAKE: 'update_room_snake',
+    QUERY_ROOM_SNAKE: 'query_room_snake',
+    END_GAME_SNAKE: 'end_game_snake',
+    CREATE_NEW_GAME_SNAKE: 'create_new_game_snake',
+    RESET_GAME_SNAKE: 'reset_snake_game_snake',
 }
 
 const query = function () {
     console.log('get')
-    client.emit(SkEvent.QUERY_GAME)
+    client.emit(SkEventSnake.QUERY_ROOM_SNAKE)
 }
 const getAll = function () {
-    client.emit(SkEvent.ALL_GAME)
+    client.emit(SkEventSnake.ALL_GAME_SNAKE)
 }
 const onJoinQueue = function () {
-    client.emit(SkEvent.JOIN_SNAKE_QUEUE, id)
+    client.emit(SkEventSnake.JOIN_SNAKE_QUEUE, id)
 }
 const onResetGame = function () {
-    client.emit(SkEvent.RESET_GAME, roomId)
+    client.emit(SkEventSnake.RESET_GAME_SNAKE, roomId)
 }
 
 
@@ -57,10 +57,10 @@ const onLogin = function (e) {
 }
 
 client.on("connect", (socket) => {
-    console.log("connect success ->", id);
+    console.log('connect success ')
 });
 
-client.on(SkEvent.UPDATE_ROOM, (res) => {
+client.on(SkEventSnake.UPDATE_ROOM_SNAKE, (res) => {
     console.log(res)
     console.log('games is update ->', res.data)
     const { games } = res.data
@@ -70,7 +70,7 @@ client.on(SkEvent.UPDATE_ROOM, (res) => {
     })
 })
 
-client.on(SkEvent.RESET_GAME, (res) => {
+client.on(SkEventSnake.RESET_GAME_SNAKE, (res) => {
     const { games } = res.data
     console.log('reset_room')
 
@@ -79,11 +79,11 @@ client.on(SkEvent.RESET_GAME, (res) => {
     })
 })
 
-client.on(SkEvent.ALL_GAME, (games) => {
+client.on(SkEventSnake.ALL_GAME_SNAKE, (games) => {
     console.log('all game ->', games)
 })
 
-client.on(SkEvent.MATCH_USER, (res) => {
+client.on(SkEventSnake.MATCH_USER_SNAKE, (res) => {
     console.log('match user ->', res)
     const { games } = res.data
     roomId = res.data.id
@@ -102,11 +102,11 @@ client.on('error', e => {
 })
 
 const onStartGame = function () {
-    client.emit(SkEvent.START_GAME, roomId)
+    client.emit(SkEventSnake.START_GAME_SNAKE, roomId)
 }
 
 const onStopGame = function() {
-    client.emit(SkEvent.PAUSING, roomId)
+    client.emit(SkEventSnake.PAUSING_SNAKE, roomId)
 }
 
 document.addEventListener('keyup', e => {
@@ -132,6 +132,6 @@ document.addEventListener('keyup', e => {
     }
 
     if (d) {
-        client.emit(SkEvent.DIRECTION, d, roomId, id)
+        client.emit(SkEventSnake.DIRECTION_SNAKE, d, roomId, id)
     }
 })

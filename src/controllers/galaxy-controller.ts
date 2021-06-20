@@ -1,13 +1,12 @@
-import { NextEmit } from './../interfaces/typing'
-import { Direction, SkCode } from './../enums/index'
 import { SkRes } from '../enums'
-import GameController from '../models/base/game-controller'
+import GameController from './base'
 import GamePlay from '../models/base/game-play'
 import Room from '../models/base/room'
+import User from '../models/base/user'
 import GalaxyGame from '../models/galaxy-battle/galaxy-game'
-import SnakeGame from '../models/snake/snake-game'
-import SnakeRoom from '../models/snake/snake-room'
 import GalaxyRoom from '../models/galaxy-battle/galaxy-room'
+import { Direction, SkCode } from './../enums/index'
+import { NextEmit } from './../interfaces/typing'
 
 export default class GalaxyController extends GameController {
     games: Record<string, GalaxyGame> = {}
@@ -17,8 +16,14 @@ export default class GalaxyController extends GameController {
         return this.rooms[roomId]
     }
 
+    getUser(id: string): User {
+        return this.users[id]
+    }
+
     createRoom(userId: string) {
-        const room = new SnakeRoom(userId)
+        const r = new GalaxyRoom(userId)
+        Object.assign(this.rooms, { [r.id]: r })
+        this.addRoom(r)
     }
 
     addRoom(r: GalaxyRoom): void {
@@ -29,31 +34,6 @@ export default class GalaxyController extends GameController {
         delete this.rooms[roomId]
     }
 
-    handleQueue(id: string, next: NextEmit<Room>) {
-        const user = this.users[id]
-        this.queue.push(user)
-        const userIntervals = this.userIntervals[id]
-
-        userIntervals.execRuntime(() => {
-            const result = this.findRandomUser(id)
-            if (result.code === SkCode.SUCCESS && id) {
-                // tslint:disable-next-line:no-console
-                console.log('id ->', id, 'finderId ->', result.user.id)
-
-                const room = new GalaxyRoom(id)
-                room.addUser(result.user.id, result.user)
-                room.addUser(result.finder.id, result.finder)
-
-                const playerIds = room.getPlayerIds()
-
-                this.addRoom(room)
-                this.leaveInterval(playerIds)
-                this.leaveQueue(playerIds)
-                next(new SkRes(SkCode.SUCCESS, room), playerIds)
-            }
-        })
-    }
-
     directGameInRoom(d: Direction, roomId: string, playerId: string) {
         const game = this.getGameInRoom(roomId, { ownerId: playerId }).getData()
         if (game && game instanceof GalaxyGame) {
@@ -61,13 +41,18 @@ export default class GalaxyController extends GameController {
         }
     }
 
-    startGamesInRoom(roomId: string, next: NextEmit<Room>) {
-        const games = this.getGameInRoom(roomId, { isArr: true }).getData()
+    startGamesInRoom(ownerId: string, next: NextEmit<GalaxyRoom>) {
+        const r = new GalaxyRoom(ownerId)
+
+        r.addUser(ownerId, this.getUser(ownerId))
+        this.addRoom(r)
+
+        const games = this.getGameInRoom(ownerId, { isArr: true }).getData()
         if (games && Array.isArray(games)) {
-            games.forEach((game: GamePlay) => game.restart())
+            games.forEach((game: GamePlay) => game.update())
         }
 
-        this.runGameLoop(roomId, next)
+        this.runGameLoop(ownerId, next)
     }
 
     pauseGamesInRoom(roomId: string, next: NextEmit<Room>) {
@@ -90,7 +75,7 @@ export default class GalaxyController extends GameController {
                     room.playerIds
                 )
             )
-        })
+        }, 1000 / 60)
     }
 
     cancelGame(roomId: string, next: NextEmit<GalaxyRoom>) {
@@ -128,28 +113,29 @@ export default class GalaxyController extends GameController {
         const room = this.rooms[roomId]
         if (!room) {
             res.setCode(SkCode.NOT_FOUND)
-        }
-        const games = room.games
-        if (gameId) {
-            res.setCode(200)
-            res.setData(this.rooms[roomId].getGame(gameId))
-        }
-        if (ownerId) {
-            const game = Object.values(games).filter(
-                (game) => game.ownerId === ownerId
-            )[0]
-            res.setCode(200)
-            res.setData(game)
-        }
+        } else {
+            const games = room.games
+            if (gameId) {
+                res.setCode(200)
+                res.setData(this.rooms[roomId].getGame(gameId))
+            }
+            if (ownerId) {
+                const game = Object.values(games).filter(
+                    (game: GalaxyGame) => game.ownerId === ownerId
+                )[0]
+                res.setCode(200)
+                res.setData(game)
+            }
 
-        if (!gameId && !ownerId && isArr) {
-            res.setCode(200)
-            res.setData(Object.values(games))
-        }
+            if (!gameId && !ownerId && isArr) {
+                res.setCode(200)
+                res.setData(Object.values(games))
+            }
 
-        if (!gameId && !ownerId) {
-            res.setCode(200)
-            res.setData(room.games)
+            if (!gameId && !ownerId) {
+                res.setCode(200)
+                res.setData(room.games)
+            }
         }
 
         return res

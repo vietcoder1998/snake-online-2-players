@@ -32,9 +32,9 @@ export class Character {
     }
 
     moving() {
-        const { vector } = this
-        this._position.x += vector.x * this.speed
-        this._position.y += vector.y * this.speed
+        const { _vector } = this
+        this._position.x += _vector.x * this.speed
+        this._position.y += _vector.y * this.speed
     }
 
     set speed(_speed: number) {
@@ -44,7 +44,7 @@ export class Character {
         return this._speed
     }
     get position(): Vector {
-        return this.position
+        return this._position
     }
     set position(_position: Vector) {
         this._position = _position
@@ -59,7 +59,7 @@ export class Character {
         this._vector = _vector
     }
     get vector(): Vector {
-        return this.vector
+        return this._vector
     }
 
     onCollision(target: Vector, range: number) {

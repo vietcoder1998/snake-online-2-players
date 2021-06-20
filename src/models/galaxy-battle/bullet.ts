@@ -10,5 +10,7 @@ export default class Bullet extends Character {
         avatar: string
     ) {
         super(w, h, range, position, avatar)
+        this.speed = 5
+        this.vector = { x: 1, y: 0 }
     }
 }

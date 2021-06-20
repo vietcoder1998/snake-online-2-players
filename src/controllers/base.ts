@@ -1,8 +1,8 @@
-import { NextEmit } from './../../interfaces/typing'
-import { Direction, SkCode, SkRes } from './../../enums/index'
-import Interval from '../../utils/interval'
-import Room from './room'
-import User from './user'
+import { Next, NextEmit } from '../interfaces/typing'
+import { Direction, SkCode, SkRes } from '../enums/index'
+import Interval from '../utils/interval'
+import Room from '../models/base/room'
+import User from '../models/base/user'
 
 export default abstract class GameController {
     users: Record<string, User> = {}
@@ -10,7 +10,7 @@ export default abstract class GameController {
     userIntervals: Record<string, Interval> = {}
     runtime: any
 
-    abstract createRoom(userId: string): void
+    abstract createRoom(userId: string, next: Next): void
     abstract getGameInRoom(
         roomId: string,
         {
@@ -24,7 +24,6 @@ export default abstract class GameController {
     abstract runGameLoop(roomId: string, next: NextEmit): any
     abstract cancelGame(roomId: string, next: NextEmit): any
     abstract resetGamesInRoom(roomId: string, next: NextEmit): any
-    abstract handleQueue(id: string, next: NextEmit): any
     abstract directGameInRoom(
         d: Direction,
         roomId: string,

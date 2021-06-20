@@ -1,6 +1,6 @@
 import { Direction, SkCode } from '../enums'
 import { NextEmit } from '../interfaces/typing'
-import GameController from '../models/base/game-controller'
+import GameController from './base'
 import Room from '../models/base/room'
 import SnakeGame from '../models/snake/snake-game'
 import SnakeRoom from '../models/snake/snake-room'
@@ -12,9 +12,9 @@ export default class SnakeController extends GameController {
     handleQueue(id: string, next: NextEmit<Room>) {
         const user = this.users[id]
         this.queue.push(user)
-        const userIntervals = this.userIntervals[id]
+        const userInterval = this.userIntervals[id]
 
-        userIntervals.execRuntime(() => {
+        userInterval.execRuntime(() => {
             const result = this.findRandomUser(id)
             if (result.code === SkCode.SUCCESS && id) {
                 // tslint:disable-next-line:no-console
@@ -58,7 +58,6 @@ export default class SnakeController extends GameController {
         if (games && Array.isArray(games)) {
             games.forEach((game: SnakeGame) => game.restart())
         }
-
         this.runGameLoop(roomId, next)
     }
 
@@ -80,13 +79,14 @@ export default class SnakeController extends GameController {
     runGameLoop(roomId: string, next: NextEmit<SnakeRoom>) {
         const room = this.getRoom(roomId)
         room.interval.execRuntime(() => {
+            console.log('lupp')
             room.updateGameInRoom(() =>
                 next(
                     new SkRes(SkCode.SUCCESS, room, 'room loop'),
                     room.playerIds
                 )
             )
-        })
+        }, 300)
     }
 
     cancelGame(roomId: string, next: NextEmit<Room>) {

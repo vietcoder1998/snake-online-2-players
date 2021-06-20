@@ -80,12 +80,12 @@ io.on('connection', (socket: Socket) => {
         socket.join(id)
         sc.setSocket(socket)
         if (gameType === GameType.GALAXY) {
-            sc.snakeController.addUser(
-                new User(id, avatar, username, GameType.SNAKE)
-            )
-        } else {
             sc.galaxyController.addUser(
                 new User(id, avatar, username, GameType.GALAXY)
+            )
+        } else {
+            sc.snakeController.addUser(
+                new User(id, avatar, username, GameType.SNAKE)
             )
         }
 
