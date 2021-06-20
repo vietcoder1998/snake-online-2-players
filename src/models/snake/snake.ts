@@ -4,11 +4,19 @@ import { Direction } from "../../enums"
 import Food from "./food"
 
 class Snake {
-    body = [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 2, y: 0 }]
-    vector = {x: 1, y: 0}
+    body = [
+        { x: 0, y: 0 },
+        { x: 1, y: 0 },
+        { x: 2, y: 0 },
+    ]
+    vector = { x: 1, y: 0 }
 
-    reset() {
-        this.body = [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 2, y: 0 }]
+    RESET_GAME() {
+        this.body = [
+            { x: 0, y: 0 },
+            { x: 1, y: 0 },
+            { x: 2, y: 0 },
+        ]
         this.vector = { x: 1, y: 0 }
     }
 
@@ -16,7 +24,7 @@ class Snake {
         const head = this.body[this.body.length - 1]
         const nHead = {
             x: head.x + this.vector.x,
-            y: head.y + this.vector.y
+            y: head.y + this.vector.y,
         }
 
         this.body.push(nHead)
@@ -26,20 +34,20 @@ class Snake {
     direction(d: Direction) {
         switch (d) {
             case Direction.LEFT:
-                this.vector = {x: -1, y: 0}
-                break;
+                this.vector = { x: -1, y: 0 }
+                break
             case Direction.RIGHT:
-                this.vector = {x: 1, y: 0}
-                break;
+                this.vector = { x: 1, y: 0 }
+                break
             case Direction.DOWN:
-                this.vector = {x: 0, y: 1}
-                break;
+                this.vector = { x: 0, y: 1 }
+                break
             case Direction.UP:
-                this.vector = {x: 0, y: -1}
-                break;
+                this.vector = { x: 0, y: -1 }
+                break
 
             default:
-                break;
+                break
         }
     }
 
@@ -56,14 +64,13 @@ class Snake {
 
         return {
             isCollision,
-            food: f
+            food: f,
         }
     }
 
     head() {
         return this.body[this.body.length - 1]
     }
-
 }
 
 export default Snake

@@ -1,4 +1,4 @@
-import { SkCode } from './../enums/index'
+import { SkCode, SkRes } from './../enums/index'
 import { Server, Socket } from 'socket.io'
 import GameController from '../controllers/snake-controller'
 import { Next } from '../interfaces/typing'
@@ -51,32 +51,31 @@ class SnakeServer {
     }
 
     startGame() {
-        this.socket.on(SkEvent.START_GAME, (roomId) => {
-            this.gameController.startGamesInRoom(roomId, (room: Room) =>
-                this.emit$({
-                    e: SkEvent.UPDATE_ROOM,
-                    to: room.playerIds,
-                    data: { code: SkCode.SUCCESS, room },
-                })
-            )
+        this.event$({
+            ev: SkEvent.START_GAME,
+            em: SkEvent.UPDATE_ROOM,
+            next: this.gameController.startGamesInRoom.bind(
+                this.gameController
+            ),
         })
     }
 
     resetGame() {
-        this.socket.on(SkEvent.RESET, (roomId) => {
-            this.gameController.resetGamesInRoom(roomId, (room: Room) => {
-                this.emit$({
-                    e: SkEvent.UPDATE_ROOM,
-                    data: room,
-                    to: room.playerIds,
-                })
-            })
+        this.event$({
+            ev: SkEvent.RESET_GAME,
+            em: SkEvent.UPDATE_ROOM,
+            next: this.gameController.resetGamesInRoom.bind(
+                this.gameController
+            ),
         })
     }
 
     stopGame() {
-        this.socket.on(SkEvent.PAUSING, (roomId) => {
-            this.gameController.pauseGamesInRoom(roomId)
+        this.event$({
+            ev: SkEvent.PAUSING,
+            next: this.gameController.pauseGamesInRoom.bind(
+                this.gameController
+            ),
         })
     }
 
@@ -90,11 +89,13 @@ class SnakeServer {
         })
     }
 
-    event$({ ev, em, next }: { ev: SkEvent; em: SkEvent; next: Next }) {
+    event$({ ev, em, next }: { ev: SkEvent; em?: SkEvent; next: Next }) {
         this.socket.on(ev, (...args) =>
-            next(...args, (data: any, to: string | string[]) =>
-                this.io.to(to).emit(em, data)
-            )
+            next(...args, <T>(data: SkRes<T>, to: string | string[]) => {
+                if (em) {
+                    this.io.to(to).emit(em, data)
+                }
+            })
         )
     }
 

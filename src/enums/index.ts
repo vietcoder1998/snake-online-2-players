@@ -1,13 +1,12 @@
 export enum GameType {
-    SNAKE = 'snake'
+    SNAKE = 'snake',
 }
 
-
-export enum Direction{
+export enum Direction {
     RIGHT = 'right',
-    LEFT ='left',
+    LEFT = 'left',
     UP = 'up',
-    DOWN = 'down'
+    DOWN = 'down',
 }
 
 export enum SkCode {
@@ -21,15 +20,15 @@ export enum SkMsg {
     NOT_FOUND = 'not found ',
     SUCCESS = 'success',
 }
-export class SocketRes<T> {
+export class SkRes<T> {
     private code: SkCode
     private data: T
     private msg: string
 
-    constructor(code: SkCode, data: T, msg: string) {
-        this.code = code
-        this.data = data
-        this.msg = msg
+    constructor(code?: SkCode, data?: T, msg?: string) {
+        this.code = code || SkCode.UNKNOWN
+        this.data = data || null
+        this.msg = msg || SkMsg.UNKNOWN
     }
 
     getCode(): SkCode {
@@ -42,5 +41,17 @@ export class SocketRes<T> {
 
     getMsg(): string {
         return this.msg
+    }
+
+    setCode(code: SkCode) {
+        this.code = code
+    }
+
+    setMsg(msg: string) {
+        this.msg = msg
+    }
+
+    setData(data: any) {
+        this.data = data
     }
 }

@@ -23,7 +23,7 @@ const SkEvent = {
     UPDATE_ROOM: 'update_room',
     GAME_UPDATE: 'game_update',
     CREATE_NEW_GAME: 'create_new_game',
-    RESET: 'reset',
+    RESET_GAME: 'RESET_GAME',
 }
 
 const query = function () {
@@ -37,7 +37,7 @@ const onJoinQueue = function () {
     client.emit(SkEvent.JOIN_QUEUE, id)
 }
 const onResetGame = function () {
-    client.emit(SkEvent.RESET, roomId)
+    client.emit(SkEvent.RESET_GAME, roomId)
 }
 
 
@@ -61,16 +61,16 @@ client.on("connect", (socket) => {
 
 client.on(SkEvent.UPDATE_ROOM, (res) => {
     console.log(res)
-    console.log('games is update ->', res.room.games)
-    const { games } = res.room
+    console.log('games is update ->', res.data)
+    const { games } = res.data
 
     Object.keys(games).forEach((key, i) => {
         drawerMap(key, games[key])
     })
 })
 
-client.on(SkEvent.RESET, (room) => {
-    const { games } = room
+client.on(SkEvent.RESET_GAME, (res) => {
+    const { games } = res.data
     console.log('reset_room')
 
     Object.keys(games).forEach((key, i) => {
@@ -84,8 +84,8 @@ client.on(SkEvent.ALL_GAME, (games) => {
 
 client.on(SkEvent.MATCH_USER, (res) => {
     console.log('match user ->', res)
-    const { games } = res.room
-    roomId = res.room.id
+    const { games } = res.data
+    roomId = res.data.id
     var canvasList = document.getElementsByTagName('canvas')
 
     Object.keys(games).forEach((key, i) => {

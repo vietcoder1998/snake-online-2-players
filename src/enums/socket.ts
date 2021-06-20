@@ -12,5 +12,5 @@ export enum SkEvent {
     QUERY_ROOM = 'query_room',
     END_GAME = 'end_game',
     CREATE_NEW_GAME = 'create_new_game',
-    RESET = 'reset',
+    RESET_GAME = 'RESET_GAME',
 }

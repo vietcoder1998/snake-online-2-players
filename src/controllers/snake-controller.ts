@@ -1,9 +1,11 @@
-import { Direction, GameType, SkCode, SocketRes } from '../enums'
-import { Next } from '../interfaces/typing'
+import Code from '../const/code'
+import { Direction, GameType, SkCode } from '../enums'
+import { Next, NextEmit } from '../interfaces/typing'
 import Room from '../models/common/room'
 import User from '../models/common/user'
 import GamePlay from '../models/snake/game'
 import Interval from '../utils/interval'
+import { SkRes } from './../enums/index'
 
 class GameController {
     rooms: Record<string, Room> = {}
@@ -38,7 +40,6 @@ class GameController {
         if (id && this.users[id]) {
             delete this.users[id]
             delete this.userIntervals[id]
-            console.log('remove user ->', this.users)
         }
     }
 
@@ -61,15 +62,14 @@ class GameController {
     }
 
     directGameInRoom(d: Direction, roomId: string, playerId: string) {
-        console.log(d, roomId, playerId, this)
-        const game = this.getGameInRoom(roomId, { ownerId: playerId })
+        const game = this.getGameInRoom(roomId, { ownerId: playerId }).getData()
         if (game && game instanceof GamePlay) {
             game.directionSnake(d)
         }
     }
 
-    startGamesInRoom(roomId: string, next: (...args: any[]) => void) {
-        const games = this.getGameInRoom(roomId, { isArr: true })
+    startGamesInRoom(roomId: string, next: NextEmit<Room>) {
+        const games = this.getGameInRoom(roomId, { isArr: true }).getData()
         if (games && Array.isArray(games)) {
             games.forEach((game: GamePlay) => game.restart())
         }
@@ -77,32 +77,38 @@ class GameController {
         this.runGameLoop(roomId, next)
     }
 
-    pauseGamesInRoom(
-        roomId: string,
-    ) {
-        const games = this.getGameInRoom(roomId, { isArr: true })
+    pauseGamesInRoom(roomId: string, next: NextEmit<Room>) {
+        const games = this.getGameInRoom(roomId, { isArr: true }).getData()
         if (games && games && Array.isArray(games)) {
             games?.forEach((game: GamePlay) => {
                 const pause = game.pause
                 game.pause = !pause
             })
         }
+        this.cancelGame(roomId, next)
     }
 
-    runGameLoop(roomId: string, next: (...args: any[]) => void) {
+    runGameLoop(roomId: string, next: NextEmit<Room>) {
         const room = this.getRoom(roomId)
         room.interval.execRuntime(() => {
-            room.runSnakeGame(() => next(room))
+            room.runSnakeGame(() =>
+                next(
+                    new SkRes(SkCode.SUCCESS, room, 'room loop'),
+                    room.playerIds
+                )
+            )
         })
     }
 
-    cancelGame(roomId: string, next: Next) {
+    cancelGame(roomId: string, next: NextEmit<Room>) {
         const room = this.getRoom(roomId)
         room.interval.clearRuntime()
-        room.runSnakeGame(() => next(room))
+        const res = room.runSnakeGame(() =>
+            next(new SkRes(SkCode.SUCCESS, room, 'Cancel game'), room.playerIds)
+        )
     }
 
-    resetGamesInRoom(roomId: string, next: Next) {
+    resetGamesInRoom(roomId: string, next: NextEmit<Room>) {
         const room = this.getRoom(roomId)
 
         room.clearGame()
@@ -113,7 +119,7 @@ class GameController {
         this.cancelGame(roomId, next)
     }
 
-    handleQueue(id: string, next: Next) {
+    handleQueue(id: string, next: NextEmit<Room>) {
         const user = this.users[id]
         this.queue.push(user)
         const userIntervals = this.userIntervals[id]
@@ -121,6 +127,7 @@ class GameController {
         userIntervals.execRuntime(() => {
             const result = this.findRandomUser(id)
             if (result.code === SkCode.SUCCESS && id) {
+                // tslint:disable-next-line:no-console
                 console.log('id ->', id, 'finderId ->', result.user.id)
 
                 const room = new Room(id)
@@ -132,8 +139,7 @@ class GameController {
                 this.addRoom(room)
                 this.leaveInterval(playerIds)
                 this.leaveQueue(playerIds)
-
-                next(room)
+                next(new SkRes(SkCode.SUCCESS, room), playerIds)
             }
         })
     }
@@ -201,36 +207,43 @@ class GameController {
             isArr,
         }: { gameId?: string; ownerId?: string; isArr?: boolean }
     ) {
+        const res = new SkRes()
         if (!roomId) {
-            throw new Error('No roomId')
+            res.setCode(SkCode.NOT_FOUND)
         }
 
         const room = this.rooms[roomId]
 
         if (!room) {
-            throw new Error('No room in room`s list')
+            res.setCode(SkCode.NOT_FOUND)
         }
 
         const games = room.games
 
         if (gameId) {
-            return this.rooms[roomId].getGame(gameId)
+            res.setCode(200)
+            res.setData(this.rooms[roomId].getGame(gameId))
         }
 
         if (ownerId) {
             const game = Object.values(games).filter(
                 (game) => game.ownerId === ownerId
             )[0]
-            return game
+            res.setCode(200)
+            res.setData(game)
         }
 
         if (!gameId && !ownerId && isArr) {
-            return Object.values(games).map((game) => game)
+            res.setCode(200)
+            res.setData(Object.values(games))
         }
 
         if (!gameId && !ownerId) {
-            return room.games
+            res.setCode(200)
+            res.setData(room.games)
         }
+
+        return res
     }
 
     findUser(userId: string) {
