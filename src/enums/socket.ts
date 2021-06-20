@@ -4,7 +4,7 @@ export enum SkEvent {
     PAUSING = 'pausing',
     NEW_GAME = 'new_game',
     ALL_GAME = 'all_game',
-    JOIN_QUEUE = 'join_queue',
+    JOIN_SNAKE_QUEUE = 'join_snake_queue',
     MATCH_USER = 'match_user',
     LEAVE_QUEUE = 'leave_queue',
     UPDATE_GAME = 'update_game',

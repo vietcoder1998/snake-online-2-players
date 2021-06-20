@@ -2,6 +2,20 @@
 "use strict";
 // define function
 
+const id = new Date().getTime().toString()
+const gameIds = []
+let roomId
+
+const client = io.connect(`http://192.168.1.55:3007`, {
+    auth: {
+        id,
+        username: `user${Math.floor(Math.random() * 10)}`,
+        avatar: '_',
+        token: '_',
+        type: 'alien',
+    },
+})
+
 const s = 5;
 const b = 2;
 const w = 160;

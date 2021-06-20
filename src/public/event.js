@@ -1,6 +1,7 @@
 const id = new Date().getTime().toString()
 const gameIds = []
 let roomId
+
 const client = io.connect(`http://192.168.1.55:3007`, {
     auth: {
         id,
@@ -17,7 +18,7 @@ const SkEvent = {
     NEW_GAME: 'new_game',
     QUERY_GAME: 'query_game',
     ALL_GAME: 'all_game',
-    JOIN_QUEUE: 'join_queue',
+    JOIN_SNAKE_QUEUE: 'join_snake_queue',
     MATCH_USER: 'match_user',
     LEAVE_QUEUE: 'leave_queue',
     UPDATE_ROOM: 'update_room',
@@ -34,7 +35,7 @@ const getAll = function () {
     client.emit(SkEvent.ALL_GAME)
 }
 const onJoinQueue = function () {
-    client.emit(SkEvent.JOIN_QUEUE, id)
+    client.emit(SkEvent.JOIN_SNAKE_QUEUE, id)
 }
 const onResetGame = function () {
     client.emit(SkEvent.RESET_GAME, roomId)

@@ -1,3 +1,7 @@
 import { SkRes } from './../enums/index'
 export type Next = (...args: any[]) => any | void
-export type NextEmit<T> = (data: SkRes<T>, to: string | string[]) => any
+export type NextEmit<T = any> = (data: SkRes<T>, to: string | string[]) => any
+export interface Vector {
+    x: number
+    y: number
+}

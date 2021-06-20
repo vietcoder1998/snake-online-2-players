@@ -1,5 +1,6 @@
 export enum GameType {
     SNAKE = 'snake',
+    GALAXY = 'galaxy',
 }
 
 export enum Direction {
@@ -20,7 +21,7 @@ export enum SkMsg {
     NOT_FOUND = 'not found ',
     SUCCESS = 'success',
 }
-export class SkRes<T> {
+export class SkRes<T = any> {
     private code: SkCode
     private data: T
     private msg: string

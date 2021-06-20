@@ -1,123 +1,13 @@
-import Code from '../const/code'
-import { Direction, GameType, SkCode } from '../enums'
-import { Next, NextEmit } from '../interfaces/typing'
-import Room from '../models/common/room'
-import User from '../models/common/user'
-import GamePlay from '../models/snake/game'
-import Interval from '../utils/interval'
+import { Direction, SkCode } from '../enums'
+import { NextEmit } from '../interfaces/typing'
+import GameController from '../models/base/game-controller'
+import Room from '../models/base/room'
+import SnakeGame from '../models/snake/snake-game'
+import SnakeRoom from '../models/snake/snake-room'
 import { SkRes } from './../enums/index'
 
-class GameController {
-    rooms: Record<string, Room> = {}
-    users: Record<string, User> = {}
-    queue: User[] = []
-    userIntervals: Record<string, Interval> = {}
-    runtime: any
-
-    createRoom(userId: string) {
-        if (!userId) {
-            throw new Error('no userId to create room')
-        }
-        Object.assign(this.rooms, { [userId]: new Room(userId) })
-    }
-
-    addUser(user: User) {
-        const id = user.id
-        user.id = id
-
-        Object.assign(this.users, { [id]: user })
-        Object.assign(this.userIntervals, { [id]: new Interval(1000) })
-    }
-
-    addRoom(r: Room) {
-        Object.assign(this.rooms, { [r.id]: r })
-    }
-
-    removeUser(id: string) {
-        if (!id) {
-            throw new Error('No userId to remove')
-        }
-        if (id && this.users[id]) {
-            delete this.users[id]
-            delete this.userIntervals[id]
-        }
-    }
-
-    removeRuntime(userId: string) {
-        delete this.userIntervals[userId]
-    }
-
-    leaveQueue(ids: string[]) {
-        if (!ids || ids.length === 0) {
-            throw new Error('No Ids in queue')
-        } else {
-            ids.forEach((id) => {
-                this.queue.forEach((user, i) => {
-                    if (user.id === id) {
-                        this.queue.splice(i, 1)
-                    }
-                })
-            })
-        }
-    }
-
-    directGameInRoom(d: Direction, roomId: string, playerId: string) {
-        const game = this.getGameInRoom(roomId, { ownerId: playerId }).getData()
-        if (game && game instanceof GamePlay) {
-            game.directionSnake(d)
-        }
-    }
-
-    startGamesInRoom(roomId: string, next: NextEmit<Room>) {
-        const games = this.getGameInRoom(roomId, { isArr: true }).getData()
-        if (games && Array.isArray(games)) {
-            games.forEach((game: GamePlay) => game.restart())
-        }
-
-        this.runGameLoop(roomId, next)
-    }
-
-    pauseGamesInRoom(roomId: string, next: NextEmit<Room>) {
-        const games = this.getGameInRoom(roomId, { isArr: true }).getData()
-        if (games && games && Array.isArray(games)) {
-            games?.forEach((game: GamePlay) => {
-                const pause = game.pause
-                game.pause = !pause
-            })
-        }
-        this.cancelGame(roomId, next)
-    }
-
-    runGameLoop(roomId: string, next: NextEmit<Room>) {
-        const room = this.getRoom(roomId)
-        room.interval.execRuntime(() => {
-            room.runSnakeGame(() =>
-                next(
-                    new SkRes(SkCode.SUCCESS, room, 'room loop'),
-                    room.playerIds
-                )
-            )
-        })
-    }
-
-    cancelGame(roomId: string, next: NextEmit<Room>) {
-        const room = this.getRoom(roomId)
-        room.interval.clearRuntime()
-        const res = room.runSnakeGame(() =>
-            next(new SkRes(SkCode.SUCCESS, room, 'Cancel game'), room.playerIds)
-        )
-    }
-
-    resetGamesInRoom(roomId: string, next: NextEmit<Room>) {
-        const room = this.getRoom(roomId)
-
-        room.clearGame()
-        room.playerIds.forEach((playerId) => {
-            const game = new GamePlay(playerId)
-            room.addGame(playerId, game)
-        })
-        this.cancelGame(roomId, next)
-    }
+export default class SnakeController extends GameController {
+    rooms: Record<string, SnakeRoom> = {}
 
     handleQueue(id: string, next: NextEmit<Room>) {
         const user = this.users[id]
@@ -130,7 +20,7 @@ class GameController {
                 // tslint:disable-next-line:no-console
                 console.log('id ->', id, 'finderId ->', result.user.id)
 
-                const room = new Room(id)
+                const room = new SnakeRoom(id)
                 room.addUser(result.user.id, result.user)
                 room.addUser(result.finder.id, result.finder)
 
@@ -143,60 +33,79 @@ class GameController {
             }
         })
     }
-
-    findRandomUser(id: string) {
-        const length = this.queue.length
-        let code = SkCode.NOT_FOUND
-        let user: User = {
-            id: null,
-            username: null,
-            avatar: null,
-            gameType: GameType.SNAKE,
-        }
-        let r = 0
-        const finder = this.users[id]
-
-        if (length <= 1) {
-            return {
-                code: SkCode.NOT_FOUND,
-                user,
-                finder,
-            }
-        } else {
-            if (!id) {
-                code = SkCode.NOT_FOUND
-            } else {
-                do {
-                    r++
-                    user = this.queue[r]
-                } while (user && id === user.id && user.id && r < length)
-
-                if (user && user.id) {
-                    code = SkCode.SUCCESS
-                }
-            }
-        }
-
-        return {
-            code,
-            user,
-            finder,
-        }
+    createRoom(userId: string) {
+        const room = new SnakeRoom(userId)
     }
 
-    deleteRoom(roomId: string) {
+    addRoom(r: any): void {
+        Object.assign(this.rooms, { [r.id]: r })
+    }
+
+    deleteRoom(roomId: string): void {
         delete this.rooms[roomId]
     }
 
-    getRoom(roomId: string) {
-        if (!roomId) {
-            throw new Error('no roomId')
+    directGameInRoom(d: Direction, roomId: string, playerId: string) {
+        const data = this.getGameInRoom(roomId, { ownerId: playerId })
+        const game = data.getData()
+        if (game && game instanceof SnakeGame) {
+            game.direction(d)
+        }
+    }
+
+    startGamesInRoom(roomId: string, next: NextEmit<SnakeRoom>) {
+        const games = this.getGameInRoom(roomId, { isArr: true }).getData()
+        if (games && Array.isArray(games)) {
+            games.forEach((game: SnakeGame) => game.restart())
         }
 
-        if (!this.rooms[roomId]) {
-            throw new Error('no room`s find')
+        this.runGameLoop(roomId, next)
+    }
+
+    pauseGamesInRoom(roomId: string, next: NextEmit<Room>) {
+        const games = this.getGameInRoom(roomId, { isArr: true }).getData()
+        if (games && games && Array.isArray(games)) {
+            games?.forEach((game: SnakeGame) => {
+                const pause = game.pause
+                game.pause = !pause
+            })
         }
+        this.cancelGame(roomId, next)
+    }
+
+    getRoom(roomId: string): SnakeRoom {
         return this.rooms[roomId]
+    }
+
+    runGameLoop(roomId: string, next: NextEmit<SnakeRoom>) {
+        const room = this.getRoom(roomId)
+        room.interval.execRuntime(() => {
+            room.updateGameInRoom(() =>
+                next(
+                    new SkRes(SkCode.SUCCESS, room, 'room loop'),
+                    room.playerIds
+                )
+            )
+        })
+    }
+
+    cancelGame(roomId: string, next: NextEmit<Room>) {
+        const room = this.getRoom(roomId)
+        room.interval.clearRuntime()
+        room.updateGameInRoom(() => {
+            next(new SkRes(SkCode.SUCCESS, room, 'Cancel game'), room.playerIds)
+        })
+    }
+
+    resetGamesInRoom(roomId: string, next: NextEmit<SnakeRoom>) {
+        const room = this.getRoom(roomId)
+
+        room.clearGame()
+        room.playerIds.forEach((playerId: string) => {
+            const game = new SnakeGame(playerId)
+            room.addGame(playerId, game)
+        })
+        this.cancelGame(roomId, next)
     }
 
     getGameInRoom(
@@ -211,20 +120,15 @@ class GameController {
         if (!roomId) {
             res.setCode(SkCode.NOT_FOUND)
         }
-
         const room = this.rooms[roomId]
-
         if (!room) {
             res.setCode(SkCode.NOT_FOUND)
         }
-
         const games = room.games
-
         if (gameId) {
             res.setCode(200)
             res.setData(this.rooms[roomId].getGame(gameId))
         }
-
         if (ownerId) {
             const game = Object.values(games).filter(
                 (game) => game.ownerId === ownerId
@@ -245,25 +149,4 @@ class GameController {
 
         return res
     }
-
-    findUser(userId: string) {
-        if (!userId || !this.users[userId]) {
-            throw new Error('no userId to find in user`s list')
-        } else {
-            return this.users[userId]
-        }
-    }
-
-    leaveInterval(ids: string[]) {
-        if (!ids || ids.length === 0) {
-            throw new Error('no id in ids to leaving')
-        } else {
-            ids.forEach((id: string) => {
-                const userInterval = this.userIntervals[id]
-                userInterval.clearRuntime()
-            })
-        }
-    }
 }
-
-export default GameController
