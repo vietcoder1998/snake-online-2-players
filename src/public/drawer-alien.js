@@ -12,11 +12,10 @@ function shipRender(ship) {
 }
 
 function bulletsRender(ship) {
-    console.log(ship)
+    ctx.fillStyle = 'yellow'
     ship &&
         ship._bullets &&
         ship._bullets.forEach((bullet) => {
-            ctx.fillStyle = 'yellow'
             ctx.fillRect(
                 bullet._position.x,
                 bullet._position.y,
@@ -34,7 +33,7 @@ function alienRender(aliens) {
 }
 
 function mapRender(game) {
-    const { map, ship, aliens, _score } = game
+    const { map, ship, aliens, _score, life } = game
 
     ctx.fillStyle = 'black'
     ctx.fillRect(0, 0, map.w, map.h)
@@ -43,7 +42,7 @@ function mapRender(game) {
     ctx.font = '20px Comic Sans MS'
     ctx.fillText(`score : ${_score}`, 20, 20)
 
-    for (let i = 0; i < l; i++) {
+    for (let i = 0; i < life; i++) {
         ctx.drawImage(heart, 200 + 10 * i, 10, 10, 10)
     }
 

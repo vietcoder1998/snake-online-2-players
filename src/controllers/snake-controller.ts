@@ -79,13 +79,12 @@ export default class SnakeController extends GameController {
     runGameLoop(roomId: string, next: NextEmit<SnakeRoom>) {
         const room = this.getRoom(roomId)
         room.interval.execRuntime(() => {
-            console.log('lupp')
-            room.updateGameInRoom(() =>
+            room.updateGameInRoom(() => {
                 next(
                     new SkRes(SkCode.SUCCESS, room, 'room loop'),
                     room.playerIds
                 )
-            )
+            })
         }, 300)
     }
 

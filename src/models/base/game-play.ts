@@ -1,6 +1,7 @@
 'use strict'
 
 import { Direction } from '../../enums'
+import Interval from '../../utils/interval'
 import GameMap from './game-map'
 
 export default abstract class GamePlay {

@@ -13,6 +13,7 @@ export default class Ship extends Character {
         avatar: string
     ) {
         super(w, h, range, position, avatar)
+        this.speed = 2
     }
 
     get bullets(): Bullet[] {
@@ -24,11 +25,11 @@ export default class Ship extends Character {
     }
 
     onShooting(bullet: Bullet): void {
-        this._bullets.push(bullet)
+        this.bullets.push(bullet)
     }
 
     onDestroyBullet(i: number) {
-        this._bullets.splice(i, 1)
+        this.bullets.splice(i, 1)
     }
 
     direction(d: Direction) {
@@ -45,16 +46,23 @@ export default class Ship extends Character {
             case Direction.UP:
                 this.vector = { x: 0, y: -1 }
                 break
+
             case Direction.SHOT:
-                this.onShooting(new Bullet(2, 2, 3, this.position, "_"))
+                this.onShooting(
+                    new Bullet(
+                        5,
+                        5,
+                        3,
+                        {
+                            x: this.position.x + 20 + 5,
+                            y: this.position.y + 40 / 2,
+                        },
+                        '_'
+                    )
+                )
                 break
             default:
                 break
         }
-    }
-
-    moving() {
-        this.position.x += this.vector.x
-        this.position.y += this.vector.y
     }
 }

@@ -3,6 +3,7 @@ import { Vector } from './../../interfaces/typing'
 import Bullet from './bullet'
 export default class AlienShip extends Character {
     private _bullets: Bullet[] = []
+
     constructor(
         w: number,
         h: number,
@@ -10,7 +11,9 @@ export default class AlienShip extends Character {
         position: Vector,
         avatar: string
     ) {
-        super(w, h, range, position, avatar)
+        super(w, h, range, position, avatar, { x: -2, y: 0 })
+        this.speed = 3
+        this.moving({ xl: 800, yl: 400 })
     }
 
     get bullets(): Bullet[] {
@@ -27,10 +30,5 @@ export default class AlienShip extends Character {
 
     onDestroyBullet(i: number) {
         this._bullets.splice(i, 1)
-    }
-
-    moving() {
-        this.position.x += this.vector.x
-        this.position.y += this.vector.y
     }
 }

@@ -22,19 +22,32 @@ export class Character {
         h: number,
         range: number,
         position: Vector,
-        avatar: string
+        avatar: string,
+        vector?: Vector
     ) {
         this._position = position || { x: 0, y: 0 }
         this.w = w
         this.h = h
         this.range = range
         this._avatar = avatar
+        if (vector) {
+            this._vector = vector
+        }
     }
 
-    moving() {
-        const { _vector } = this
-        this._position.x += _vector.x * this.speed
-        this._position.y += _vector.y * this.speed
+    moving({ xl, yl }: { xl: number; yl: number }) {
+        if (
+            this.position.x + this.vector.x > -1 &&
+            this.position.x + this.vector.x < xl &&
+            this.position.y + this.vector.y > -1 &&
+            this.position.y + this.vector.y < yl
+        ) {
+            this.position.x += this.vector.x * this.speed
+            this.position.y += this.vector.y * this.speed
+        } else {
+            this.vector.x = 0
+            this.vector.y = 0
+        }
     }
 
     set speed(_speed: number) {
@@ -66,7 +79,7 @@ export class Character {
         const { x, y } = target
         if (
             Math.abs(this.range + range) >
-            Math.sqrt((this._position.x - x) * (this._position.y - y))
+            Math.sqrt((this.position.x - x) * (this.position.y - y))
         ) {
             return true
         } else return false

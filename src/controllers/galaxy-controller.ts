@@ -46,12 +46,6 @@ export default class GalaxyController extends GameController {
 
         r.addUser(ownerId, this.getUser(ownerId))
         this.addRoom(r)
-
-        const games = this.getGameInRoom(ownerId, { isArr: true }).getData()
-        if (games && Array.isArray(games)) {
-            games.forEach((game: GamePlay) => game.update())
-        }
-
         this.runGameLoop(ownerId, next)
     }
 
@@ -68,7 +62,14 @@ export default class GalaxyController extends GameController {
 
     runGameLoop(roomId: string, next: NextEmit<Room>) {
         const room = this.getRoom(roomId)
+        const game = Object.values(room.games)[0]
+        console.log(game)
+        let i = 0
         room.interval.execRuntime(() => {
+            i++
+            if (i % 20 === 0) {
+                game.makeRandomAlien()
+            }
             room.updateGameInRoom(() =>
                 next(
                     new SkRes(SkCode.SUCCESS, room, 'room loop'),

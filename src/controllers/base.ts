@@ -21,7 +21,7 @@ export default abstract class GameController {
     ): SkRes
     abstract startGamesInRoom(roomId: string, next: NextEmit): any
     abstract pauseGamesInRoom(roomId: string, next: NextEmit): any
-    abstract runGameLoop(roomId: string, next: NextEmit): any
+    abstract runGameLoop(roomId: string, next: NextEmit, game: any): any
     abstract cancelGame(roomId: string, next: NextEmit): any
     abstract resetGamesInRoom(roomId: string, next: NextEmit): any
     abstract directGameInRoom(

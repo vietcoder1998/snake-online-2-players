@@ -1,3 +1,4 @@
+import { Next } from '../interfaces/typing'
 
 export default class Interval {
     time = 1000
@@ -16,7 +17,7 @@ export default class Interval {
         this.time = time
     }
 
-    execRuntime(next: () => void, time?: number) {
+    execRuntime(next: Next, time?: number) {
         this.runtime = setInterval(() => {
             next()
         }, time || this.time)
