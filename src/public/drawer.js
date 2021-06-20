@@ -28,18 +28,14 @@ const drawerSnake = function (ctx, snake) {
 }
 
 const drawerFood = function (ctx, foods) {
-    console.log(foods)
     foods.forEach((item, i) => {
         ctx.fillStyle = 'orange'
-        ctx.fillRect(size*item.x, size*item.y, size, size)
+        ctx.fillRect(size * item.x, size * item.y, size, size)
     })
 }
 
 const updateMap = function (ctx, game) {
     const { map, snake, foods } = game
-    console.log("snake ->", game.snake.body)
-    console.log("vector ->", game.snake.vector)
-
     ctx.fillStyle = 'black'
     ctx.fillRect(0, 0, size * map.w, size * map.h)
     drawerSnake(ctx, snake.body)

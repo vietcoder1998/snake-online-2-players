@@ -76,7 +76,7 @@ const sc = new SnakeServer(io)
 
 io.on("connection", (socket: Socket) => {
     const { id, avatar, username, token } = socket.handshake.auth
-    console.log( socket.handshake.auth)
+    console.log('join ->' ,socket.handshake.auth)
     try {
         socket.join(id)
         sc.setSocket(socket)

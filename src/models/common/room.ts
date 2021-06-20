@@ -1,13 +1,14 @@
-import Interval from "../../utils/interval"
-import GamePlay from "../snake/game"
-import User from "./user"
+import { Next } from '../../interfaces/typing'
+import Interval from '../../utils/interval'
+import GamePlay from '../snake/game'
+import User from './user'
 
 class Room {
-    id: string
-    ownerId: string
-    players: Record<string, User>
-    playerIds: string[]
-    games: Record<string, GamePlay>
+    id: string = null
+    ownerId: string = null
+    players: Record<string, User> = {}
+    playerIds: string[] = []
+    games: Record<string, GamePlay> = {}
     interval = new Interval(500)
 
     constructor(o: string) {
@@ -29,18 +30,19 @@ class Room {
     }
 
     addGame(ownerId: string, g: GamePlay) {
-        Object.assign(this.games, {[ownerId]: g})
+        Object.assign(this.games, { [ownerId]: g })
     }
 
     getPlayerIds() {
         return this.playerIds
     }
 
-    runSnakeGame(next: (...args: any[]) => void ) {
+    runSnakeGame(next: Next) {
         const games = this.getGames(true)
         if (games && Array.isArray(games)) {
-            games.forEach((game: GamePlay) => game.runSnake())
+            games.forEach((game: GamePlay) => game.updateGame())
         }
+
         next()
     }
 
@@ -63,8 +65,8 @@ class Room {
         this.createGame(id)
     }
 
-    getGames(a: boolean){
-        if (a) {
+    getGames(isArr: boolean) {
+        if (isArr) {
             return Object.values(this.games)
         }
         return this.games

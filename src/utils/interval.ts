@@ -16,17 +16,10 @@ export default class Interval {
         this.time = time
     }
 
-    execRuntime(next: (...args: any[])=> void, time?: number) {
-        this.lastFunction = next
+    execRuntime(next: () => void, time?: number) {
         this.runtime = setInterval(() => {
-            if (!next && !this.lastFunction) {
-                throw new Error('none action in interval')
-            }
-            if (!next) {
-                this.lastFunction()
-            } else
             next()
-        }, time || this.time);
+        }, time || this.time)
     }
 
     clearRuntime(next?: () => void) {

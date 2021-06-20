@@ -1,1 +1,1 @@
-export type Next<T> = (...args: any[]) => T | void
+export type Next = (...args: any[]) => any | void

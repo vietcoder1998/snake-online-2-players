@@ -10,7 +10,7 @@ const client = io.connect(`http://192.168.1.55:3007`, {
     }
 });
 
-const skEvent = {
+const SkEvent = {
     START_GAME: 'start_game',
     DIRECTION: 'direction',
     PAUSING: 'pausing',
@@ -23,13 +23,22 @@ const skEvent = {
     UPDATE_ROOM: 'update_room',
     GAME_UPDATE: 'game_update',
     CREATE_NEW_GAME: 'create_new_game',
-    RESET: 'reset'
+    RESET: 'reset',
 }
 
-const query = function () { console.log("get"); client.emit(skEvent.QUERY_GAME) }
-const getAll = function () { client.emit(skEvent.ALL_GAME) }
-const onJoinQueue = function () { client.emit(skEvent.JOIN_QUEUE, id) }
-const onResetGame = function () { client.emit(skEvent.RESET, roomId) }
+const query = function () {
+    console.log('get')
+    client.emit(SkEvent.QUERY_GAME)
+}
+const getAll = function () {
+    client.emit(SkEvent.ALL_GAME)
+}
+const onJoinQueue = function () {
+    client.emit(SkEvent.JOIN_QUEUE, id)
+}
+const onResetGame = function () {
+    client.emit(SkEvent.RESET, roomId)
+}
 
 
 const onLogin = function (e) {
@@ -50,16 +59,17 @@ client.on("connect", (socket) => {
     console.log("connect success ->", id);
 });
 
-client.on(skEvent.UPDATE_ROOM, room => {
-    const { games } = room
-    console.log('games is update ->', games)
+client.on(SkEvent.UPDATE_ROOM, (res) => {
+    console.log(res)
+    console.log('games is update ->', res.room.games)
+    const { games } = res.room
 
     Object.keys(games).forEach((key, i) => {
         drawerMap(key, games[key])
     })
 })
 
-client.on(skEvent.RESET, room => {
+client.on(SkEvent.RESET, (room) => {
     const { games } = room
     console.log('reset_room')
 
@@ -68,11 +78,11 @@ client.on(skEvent.RESET, room => {
     })
 })
 
-client.on(skEvent.ALL_GAME, games => {
+client.on(SkEvent.ALL_GAME, (games) => {
     console.log('all game ->', games)
 })
 
-client.on(skEvent.MATCH_USER, res => {
+client.on(SkEvent.MATCH_USER, (res) => {
     console.log('match user ->', res)
     const { games } = res.room
     roomId = res.room.id
@@ -91,11 +101,11 @@ client.on('error', e => {
 })
 
 const onStartGame = function () {
-    client.emit(skEvent.START_GAME, roomId)
+    client.emit(SkEvent.START_GAME, roomId)
 }
 
 const onStopGame = function() {
-    client.emit(skEvent.PAUSING, roomId)
+    client.emit(SkEvent.PAUSING, roomId)
 }
 
 document.addEventListener('keyup', e => {
@@ -121,6 +131,6 @@ document.addEventListener('keyup', e => {
     }
 
     if (d) {
-        client.emit(skEvent.DIRECTION, d ,roomId, id )
+        client.emit(SkEvent.DIRECTION, d, roomId, id)
     }
 })
