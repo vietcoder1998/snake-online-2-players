@@ -1,5 +1,5 @@
-import Interval from '../../utils/interval'
-import { Vector } from './../../interfaces/typing'
+import Interval from '../utils/interval'
+import { MoveRange, Vector } from '../interfaces/typing'
 export class Character {
     private _position: Vector = {
         x: 0,
@@ -9,9 +9,13 @@ export class Character {
     private _interval = new Interval(1000)
     private _speed: number = 1
     private _state: number = 0
-    private w: number
-    private h: number
+    public w: number
+    public h: number
     private range: number
+    private limit: MoveRange = {
+        w: 0,
+        h: 0,
+    }
     private _vector: Vector = {
         x: 0,
         y: 0,
@@ -23,15 +27,20 @@ export class Character {
         range: number,
         position: Vector,
         avatar: string,
-        vector?: Vector
+        vector?: Vector,
+        limit?: MoveRange
     ) {
-        this._position = position || { x: 0, y: 0 }
+        this.position = position || { x: 0, y: 0 }
         this.w = w
         this.h = h
         this.range = range
         this._avatar = avatar
         if (vector) {
-            this._vector = vector
+            this.vector = vector
+        }
+
+        if (limit) {
+            this.limit = limit
         }
     }
 
@@ -75,13 +84,27 @@ export class Character {
         return this._vector
     }
 
+    set avatar(_avatar: string) {
+        this._avatar = _avatar
+    }
+    get avatar(): string {
+        return this._avatar
+    }
+
     onCollision(target: Vector, range: number) {
         const { x, y } = target
         if (
-            Math.abs(this.range + range) >
+            Math.abs(this.range + range) <
             Math.sqrt((this.position.x - x) * (this.position.y - y))
         ) {
             return true
         } else return false
+    }
+
+    getSize() {
+        return {
+            w: this.w,
+            h: this.h,
+        }
     }
 }

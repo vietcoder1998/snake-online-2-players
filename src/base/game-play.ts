@@ -1,13 +1,13 @@
 'use strict'
 
-import { Direction } from '../../enums'
-import Interval from '../../utils/interval'
+import { Direction } from './response'
+import Interval from '../utils/interval'
 import GameMap from './game-map'
 
 export default abstract class GamePlay {
-    id: string
-    ownerId: string
-    map: GameMap
+    public id: string
+    public ownerId: string
+    public map: GameMap
     private _score: number = 0
     private _end: boolean = false
     private _pause: boolean = false

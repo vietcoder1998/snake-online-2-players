@@ -1,10 +1,10 @@
-import { Direction, SkCode } from '../enums'
+import { Direction, SkCode } from '../base/response'
 import { NextEmit } from '../interfaces/typing'
-import GameController from './base'
-import Room from '../models/base/room'
-import SnakeGame from '../models/snake/snake-game'
-import SnakeRoom from '../models/snake/snake-room'
-import { SkRes } from './../enums/index'
+import GameController from '../base/game-controller'
+import Room from '../base/room'
+import SnakeGame from '../models/g1-sn/snake-game'
+import SnakeRoom from '../models/g1-sn/snake-room'
+import { SkRes } from '../base/response'
 
 export default class SnakeController extends GameController {
     rooms: Record<string, SnakeRoom> = {}

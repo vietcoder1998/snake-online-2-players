@@ -1,5 +1,5 @@
-import { Vector } from './../../interfaces/typing'
-import { Character } from '../base/character'
+import { Vector } from '../../interfaces/typing'
+import { Character } from '../../base/character'
 
 export default class Bullet extends Character {
     constructor(

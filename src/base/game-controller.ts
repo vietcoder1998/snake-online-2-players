@@ -1,8 +1,8 @@
 import { Next, NextEmit } from '../interfaces/typing'
-import { Direction, SkCode, SkRes } from '../enums/index'
+import { Direction, SkCode, SkRes } from './response'
 import Interval from '../utils/interval'
-import Room from '../models/base/room'
-import User from '../models/base/user'
+import Room from './room'
+import User from './user'
 
 export default abstract class GameController {
     users: Record<string, User> = {}

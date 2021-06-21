@@ -1,7 +1,7 @@
 import { Errback, NextFunction, Request, Response } from 'express'
 import { Socket } from 'socket.io'
-import { GameType } from './enums/index'
-import User from './models/base/user'
+import { GameType } from './base/response'
+import User from './base/user'
 import SnakeServer from './socket/socket-server'
 import { getIp } from './utils/ip'
 
@@ -11,6 +11,7 @@ const mysql = require('mysql')
 const fs = require('fs')
 
 const app = express()
+const ips = getIp()
 
 const con = mysql.createConnection({
     host: 'localhost',
@@ -106,7 +107,6 @@ io.on('connection', (socket: Socket) => {
 })
 
 server.listen(3007, (e: Error) => {
-    const ips = getIp()
     console.log(`http://${ips[1]}:${3007}`)
     if (e) {
         console.log(e)

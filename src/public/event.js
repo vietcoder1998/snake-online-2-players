@@ -2,14 +2,14 @@ const id = new Date().getTime().toString()
 const gameIds = []
 let roomId
 
-const client = io.connect(`http://192.168.1.55:3007`, {
+const client = io.connect(`http://192.168.1.56:3007`, {
     auth: {
         id,
         username: `user${Math.floor(Math.random() * 10)}`,
         avatar: '_',
-        token: '_'
-    }
-});
+        token: '_',
+    },
+})
 
 const SkEventSnake = {
     START_GAME_SNAKE: 'start_game_snake',

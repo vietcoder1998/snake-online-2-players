@@ -1,6 +1,6 @@
 import { Next } from '../../interfaces/typing'
-import Room from '../base/room'
-import User from '../base/user'
+import Room from '../../base/room'
+import User from '../../base/user'
 import SnakeGame from './snake-game'
 
 export default class SnakeRoom extends Room {

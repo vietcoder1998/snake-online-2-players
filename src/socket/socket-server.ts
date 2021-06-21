@@ -2,7 +2,7 @@ import { SkEventSnake, SkEventGalaxy } from './../enums/socket'
 import { Server, Socket } from 'socket.io'
 import GalaxyController from '../controllers/galaxy-controller'
 import SnakeController from '../controllers/snake-controller'
-import { SkRes } from '../enums/index'
+import { SkRes } from '../base/response'
 import { Next } from '../interfaces/typing'
 
 class SocketServer {

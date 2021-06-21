@@ -1,7 +1,7 @@
-import { Next } from '../../interfaces/typing'
-import Interval from '../../utils/interval'
-import GalaxyGame from '../galaxy-battle/galaxy-game'
-import SnakeGame from '../snake/snake-game'
+import { Next } from '../interfaces/typing'
+import Interval from '../utils/interval'
+import GalaxyGame from '../models/g0-bt/galaxy-game'
+import SnakeGame from '../models/g1-sn/snake-game'
 import User from './user'
 
 export default abstract class Room {

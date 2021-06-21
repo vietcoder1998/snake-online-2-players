@@ -1,6 +1,6 @@
 "use strict"
 
-import { Direction } from "../../enums"
+import { Direction } from "../../base/response"
 import Food from "./food"
 
 class Snake {

@@ -22,6 +22,7 @@ export enum SkMsg {
     NOT_FOUND = 'not found ',
     SUCCESS = 'success',
 }
+
 export class SkRes<T = any> {
     private code: SkCode
     private data: T

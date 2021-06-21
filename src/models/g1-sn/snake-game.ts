@@ -1,8 +1,8 @@
 'use strict'
 
-import { Direction } from '../../enums'
-import GamePlay from '../base/game-play'
-import GameMap from '../base/game-map'
+import { Direction } from '../../base/response'
+import GamePlay from '../../base/game-play'
+import GameMap from '../../base/game-map'
 import Food from './food'
 import Snake from './snake'
 

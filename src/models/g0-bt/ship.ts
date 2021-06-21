@@ -1,6 +1,6 @@
-import { Direction } from './../../enums/index'
-import { Character } from '../base/character'
-import { Vector } from './../../interfaces/typing'
+import { Direction } from '../../base/response'
+import { Character } from '../../base/character'
+import { MoveRange, Vector } from '../../interfaces/typing'
 import Bullet from './bullet'
 
 export default class Ship extends Character {
@@ -10,16 +10,17 @@ export default class Ship extends Character {
         h: number,
         range: number,
         position: Vector,
-        avatar: string
+        avatar: string,
+        vector?: Vector,
+        limit?: MoveRange
     ) {
-        super(w, h, range, position, avatar)
+        super(w, h, range, position, avatar, vector, limit)
         this.speed = 2
     }
 
     get bullets(): Bullet[] {
         return this._bullets
     }
-
     set bullets(_bullets: Bullet[]) {
         this._bullets = _bullets
     }
@@ -54,8 +55,8 @@ export default class Ship extends Character {
                         5,
                         3,
                         {
-                            x: this.position.x + 20 + 5,
-                            y: this.position.y + 40 / 2,
+                            x: this.position.x + this.w / 2,
+                            y: this.position.y,
                         },
                         '_'
                     )

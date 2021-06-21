@@ -1,4 +1,4 @@
-import { GameType } from '../../enums/index';
+import { GameType } from './response';
 
 export default class User {
     id: string

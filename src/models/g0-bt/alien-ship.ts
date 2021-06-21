@@ -1,5 +1,5 @@
-import { Character } from '../base/character'
-import { Vector } from './../../interfaces/typing'
+import { Character } from '../../base/character'
+import { Vector } from '../../interfaces/typing'
 import Bullet from './bullet'
 export default class AlienShip extends Character {
     private _bullets: Bullet[] = []
@@ -11,7 +11,8 @@ export default class AlienShip extends Character {
         position: Vector,
         avatar: string
     ) {
-        super(w, h, range, position, avatar, { x: -2, y: 0 })
+        super(w, h, range, position, avatar)
+        this.vector = { x: 0, y: 1 }
         this.speed = 3
         this.moving({ xl: 800, yl: 400 })
     }
@@ -25,10 +26,10 @@ export default class AlienShip extends Character {
     }
 
     onShooting(bullet: Bullet): void {
-        this._bullets.push(bullet)
+        this.bullets.push(bullet)
     }
 
     onDestroyBullet(i: number) {
-        this._bullets.splice(i, 1)
+        this.bullets.splice(i, 1)
     }
 }

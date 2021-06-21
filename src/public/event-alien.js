@@ -74,13 +74,13 @@ client.on(SkEventGalaxy.UPDATE_ROOM_GALAXY, (res) => {
     const { games } = res.data
     roomId = res.data.id
 
-    mapRender(Object.values(games)[0])
+    gameRender(Object.values(games)[0])
 })
 
 client.on(SkEventGalaxy.RESET_GAME_GALAXY, (res) => {
     const { games } = res.data
 
-    mapRender(ctx, Object.values(games)[0])
+    gameRender(ctx, Object.values(games)[0])
 })
 
 client.on(SkEventGalaxy.SHOT)
