@@ -6,6 +6,7 @@
 		"rootDir": "src",
 		"allowJs": true,
 		"noImplicitAny": true,
+		"esModuleInterop": false
 	},
 	"include": ["src", "src/public/.js"],
 	"exclude": ["node_modules", "src/public/"]

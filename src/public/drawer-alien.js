@@ -27,24 +27,28 @@ function shipRender(ship) {
     ctx.restore()
 }
 
-function bulletsRender(ship) {
+function bulletsRender(bullets) {
     ctx.fillStyle = 'yellow'
-    ship &&
-        ship._bullets &&
-        ship._bullets.forEach((bullet) => {
-            ctx.fillRect(
-                bullet._position.x,
-                bullet._position.y,
-                bullet.w,
-                bullet.h
-            )
-        })
+    bullets.forEach((bullet) => {
+        ctx.fillRect(
+            bullet._position.x - bullet.w / 2,
+            bullet._position.y - bullet.h / 2,
+            bullet.w,
+            bullet.h
+        )
+    })
 }
 
 function alienRender(aliens) {
-    aliens.forEach((item, i) => {
+    aliens.forEach((alien, i) => {
         ctx.fillStyle = 'orange'
-        ctx.fillRect(item._position.x, item._position.y, item.w, item.h)
+        ctx.drawImage(
+            alienImg,
+            alien._position.x - alien.w / 2,
+            alien._position.y - alien.h / 2,
+            alien.w,
+            alien.h
+        )
     })
 }
 
@@ -54,8 +58,9 @@ function alienRender(aliens) {
 })()
 
 function mapRender(map, life, score) {
+    ctx.restore()
     ctx.fillStyle = 'black'
-    ctx.fillRect(0, 0, map.w, map.h)
+    ctx.drawImage(bg, 0, 0, map.w, map.h)
 
     ctx.fillStyle = 'white'
     ctx.font = '20px Comic Sans MS'
@@ -70,10 +75,17 @@ function gameRender(game) {
     try {
         const { map, ship, aliens, _score, life } = game
         mapRender(map, life, _score)
-        bulletsRender(ship)
+
+        ship && bulletsRender(ship._bullets)
+        aliens.forEach((alien) => {
+            alien && bulletsRender(alien._bullets)
+        })
+
         shipRender(ship)
         alienRender(aliens)
+        ctx.restore()
     } catch (err) {
+        console.log(err)
         client.disconnect()
     }
 }

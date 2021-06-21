@@ -1,7 +1,7 @@
 const id = new Date().getTime().toString()
 const gameIds = []
 let roomId
-
+let count = 0
 const client = io.connect(`http://192.168.1.55:3007`, {
     auth: {
         id,
@@ -36,6 +36,12 @@ heart.src =
 
 const shipImg = document.createElement('img')
 shipImg.src = './galaxy.png'
+
+const alienImg = document.createElement('img')
+alienImg.src = './alien.png'
+
+const bg = document.createElement('img')
+bg.src = './bg.jpeg'
 
 let l = 3
 const ctx = c.getContext('2d')
@@ -73,6 +79,7 @@ client.on('connect', (socket) => {
 client.on(SkEventGalaxy.UPDATE_ROOM_GALAXY, (res) => {
     const { games } = res.data
     roomId = res.data.id
+    count += 1
 
     gameRender(Object.values(games)[0])
 })

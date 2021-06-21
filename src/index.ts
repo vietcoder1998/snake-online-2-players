@@ -1,9 +1,5 @@
 import { Errback, NextFunction, Request, Response } from 'express'
-import { Socket } from 'socket.io'
-import { GameType } from './base/response'
-import User from './base/user'
-import SnakeServer from './socket/socket-server'
-import { getIp } from './utils/ip'
+import { getIp } from './services/node.js/base/utils/ip'
 
 const express = require('express')
 const http = require('http')
@@ -68,43 +64,6 @@ app.use((err: Errback, req: Request, res: Response, next: NextFunction) => {
 })
 
 const server = http.createServer(app)
-const io = require('socket.io')(server, {
-    origin: ['*'],
-})
-
-const sc = new SnakeServer(io)
-
-io.on('connection', (socket: Socket) => {
-    const { id, avatar, username, token, gameType } = socket.handshake.auth
-
-    try {
-        socket.join(id)
-        sc.setSocket(socket)
-        if (gameType === GameType.GALAXY) {
-            sc.galaxyController.addUser(
-                new User(id, avatar, username, GameType.GALAXY)
-            )
-        } else {
-            sc.snakeController.addUser(
-                new User(id, avatar, username, GameType.SNAKE)
-            )
-        }
-
-        sc.listen()
-    } catch (err) {
-        socket._error(err)
-    }
-
-    socket.on('error', (err) => {
-        console.log(err)
-    })
-
-    socket.on('disconnect', (reason) => {
-        sc.snakeController.removeUser(id)
-        sc.snakeController.removeRuntime(id)
-        socket.leave(id)
-    })
-})
 
 server.listen(3007, (e: Error) => {
     console.log(`http://${ips[1]}:${3007}`)
