@@ -1,73 +1,49 @@
-import { Errback, NextFunction, Request, Response } from 'express'
-import { getIp } from './services/node.js/base/utils/ip'
+import * as bodyParser from 'body-parser'
+import * as cors from 'cors'
+import * as dotenv from 'dotenv'
+import * as express from 'express'
+import { Express } from 'express-serve-static-core'
+import * as http from 'http'
+import * as swaggerUi from 'swagger-ui-express'
+import migrateDataBase from './database'
+import specs from './swagger'
+import { ip } from './utils/ip'
 
-const express = require('express')
-const http = require('http')
-const mysql = require('mysql')
-const fs = require('fs')
+export default class ExpressApplicationService {
+    private application: Express
+    private corsOptions: cors.CorsOptions
+    private server: http.Server
 
-const app = express()
-const ips = getIp()
+    constructor() {
+        dotenv.config()
+        migrateDataBase()
 
-const con = mysql.createConnection({
-    host: 'localhost',
-    password: 'Anh123456./',
-    port: 3306,
-    user: 'root',
-})
-
-con.connect(function (err: Error) {
-    if (err) {
-        console.log(err)
-        throw err
+        this.application = express()
+        this.server = http.createServer(this.application)
+        this.corsOptions = {
+            origin: `http://${ip}:${process.env.PORT}`,
+            credentials: true, //access-control-allow-credentials:true
+            optionsSuccessStatus: 200,
+        }
     }
-})
 
-con.query('USE snake', function (err: Error, result: any) {
-    console.log(err, result)
-    if (!result) {
-        con.query('CREATE DATABASE snake', function (err: Error, result: any) {
-            if (err) {
-                console.log(err)
-                throw err
-            } else console.log(result)
+    public start() {
+        //@ts-ignore
+        this.application.use(bodyParser.json())
+
+        // router in here
+
+        //@ts-ignore
+        this.application.use(
+            '/api-docs',
+            swaggerUi.serve,
+            swaggerUi.setup(specs)
+        )
+        this.server.listen(process.env.PORT, () => {
+            console.log(`start -> \x1b[32m http://${ip + process.env.PORT}`)
         })
     }
-})
+}
 
-app.get('/', (req: Request, res: Response, next: NextFunction) => {
-    res.sendFile(__dirname + '/public/index.html')
-})
-
-app.get('/:name', (req: Request, res: Response, next: NextFunction) => {
-    res.sendFile(__dirname + `/public/${req.params.name}`)
-})
-
-app.get('/v1/user', (req: Request, res: Response, next: NextFunction) => {
-    fs.readFile(__dirname + '/json/user.json', (err: Error, data: any) => {
-        res.send(JSON.parse(data.toString()))
-    })
-})
-
-app.get('/v1/user/:id', (req: Request, res: Response, next: NextFunction) => {
-    fs.readFile(__dirname + '/json/user.json', (err: Error, data: any) => {
-        const users = JSON.parse(data.toString())
-        res.send(users[req.params.id])
-    })
-})
-
-app.use((err: Errback, req: Request, res: Response, next: NextFunction) => {
-    if (err) {
-        res.status(404).end('404 not found')
-        throw err
-    }
-})
-
-const server = http.createServer(app)
-
-server.listen(3007, (e: Error) => {
-    console.log(`http://${ips[1]}:${3007}`)
-    if (e) {
-        console.log(e)
-    }
-})
+const application = new ExpressApplicationService()
+application.start()

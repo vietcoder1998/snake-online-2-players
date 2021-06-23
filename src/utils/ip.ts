@@ -6,13 +6,12 @@ export function getHostName() {
     return hostname
 }
 
-export function getIp() {
+export const ip = (function getIp() {
     const nw = os.networkInterfaces()
 
     if (nw) {
         const address1 = nw.lo0[0].address
         const address2 = nw.en0[1].address
         return [address1, address2]
-
     } else return [null, null]
-}
+})()[0]
