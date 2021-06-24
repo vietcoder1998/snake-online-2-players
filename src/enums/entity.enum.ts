@@ -1,10 +1,10 @@
 export enum EntityTypes {
-    USERS = 'user',
+    USER = 'user',
     PROFILE = 'profile',
     UPLOAD = 'upload',
     MODULES = 'module',
     ROUTES = 'route',
-    ROLES = 'role',
+    ROLE = 'role',
     FUNCTION = 'function',
     API = 'api',
     METHOD = 'method',

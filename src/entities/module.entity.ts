@@ -11,7 +11,7 @@ import ApiEntity from './api.entity'
 @Entity(EntityTypes.MODULES)
 export default class ModuleEntity {
     @PrimaryGeneratedColumn()
-    id?: number
+    id: number
 
     @Column({
         type: 'varchar',
@@ -26,7 +26,7 @@ export default class ModuleEntity {
     description: string
 
     @OneToMany((api) => ApiEntity, (api) => api.module, {
-        onDelete: 'RESTRICT',
+        onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
     })
     apis: ApiEntity[]

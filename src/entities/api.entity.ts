@@ -15,7 +15,7 @@ import RoleEntity from './role.entity'
 @Entity(EntityTypes.API)
 export default class ApiEntity {
     @PrimaryGeneratedColumn()
-    id?: number
+    id: number
 
     @Column({
         type: 'varchar',
@@ -43,6 +43,10 @@ export default class ApiEntity {
     method: MethodEntity
 
     // Many to many with role
-    @ManyToMany((role) => RoleEntity, (role) => role.apis)
+    @ManyToMany((role) => RoleEntity, (role) => role.apis, {
+        onDelete: 'NO ACTION',
+        onUpdate: 'NO ACTION',
+    })
+    @JoinTable({ name: 'api_role' })
     roles: RoleEntity[]
 }

@@ -11,7 +11,7 @@ import User from '../models/user.model'
 import ProfileEntity from './profile.entity'
 import RoleEntity from './role.entity'
 
-@Entity(EntityTypes.USERS)
+@Entity(EntityTypes.USER)
 export default class UserEntity extends User {
     @PrimaryGeneratedColumn()
     id?: number

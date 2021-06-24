@@ -46,7 +46,7 @@ const migrateDataBase = async function () {
                 ApiEntity,
             ],
             synchronize: true,
-            logging: false,
+            logging: true,
         }
         const connection = await createConnections([mysql])
         connection.map((element: Connection) => {

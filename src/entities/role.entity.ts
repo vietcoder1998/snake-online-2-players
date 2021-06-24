@@ -9,10 +9,10 @@ import { EntityTypes } from '../enums/entity.enum'
 import Role from '../models/role.model'
 import ApiEntity from './api.entity'
 
-@Entity(EntityTypes.ROLES)
+@Entity(EntityTypes.ROLE)
 export default class RoleEntity extends Role {
     @PrimaryGeneratedColumn()
-    id?: number
+    id: number
 
     @Column({
         type: 'varchar',
@@ -24,7 +24,11 @@ export default class RoleEntity extends Role {
     })
     description?: string
 
-    @ManyToMany((api) => ApiEntity, (api) => api.roles)
-    @JoinTable({ name: 'role_api' })
+    @ManyToMany((api) => ApiEntity, (api) => api.roles, {
+        cascade: true,
+        createForeignKeyConstraints: true,
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+    })
     apis: ApiEntity[]
 }
