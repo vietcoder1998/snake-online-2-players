@@ -8,10 +8,11 @@ export enum UserErrorMessage {
     PASS_TOO_SHORT = 'Password is too short',
     FULL_NAME_REQUIREMENT = 'Full Name is requirement',
     DESCRIPTION_REQUIREMENT = 'Description is requirement',
+    LOGIN_ERROR = 'Username or password is not found',
 }
 
 export enum CommonErrorMessage {
-    SUCCESS = 'Congratulations',
+    SUCCESS = 'success',
     ERROR = 'Failure',
     NOT_FOUND = 'Not found',
     REQUEST_BODY_ERR = 'Body is invalid',
@@ -20,7 +21,7 @@ export enum CommonErrorMessage {
     BODY_IS_NEEDED = 'Body is needed',
     ID_IS_NEEDED = 'Id is need',
     DATA_IS_NOT_EXISTED = 'Data is not existed',
-    CONFLICT = 'Data is conflict'
+    CONFLICT = 'Data is conflict',
 }
 
 export enum FriendErrorMessage {
@@ -44,7 +45,7 @@ export enum RoomErrorMessage {
 }
 
 export enum CommonMessage {
-    SUCCESS = 'Congratulations',
+    SUCCESS = 'success',
     ERROR = 'Failure',
     NOT_FOUND = 'Not found',
     REQUEST_BODY_ERR = 'Body is invalid',
@@ -53,5 +54,5 @@ export enum CommonMessage {
     BODY_IS_NEEDED = 'Body is needed',
     ID_IS_NEEDED = 'Id is need',
     DATA_IS_NOT_EXISTED = 'Data is not existed',
-    CONFLICT = 'Data is conflict'
+    CONFLICT = 'Data is conflict',
 }

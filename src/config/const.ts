@@ -86,7 +86,7 @@ const MSG = {
         NOT_FOUND: 'Product Type was not founded',
         DATA_REQUIREMENT: 'Room data is requirement',
     },
-    SUCCESS: 'Congratulations',
+    SUCCESS: 'success',
     ERROR: 'Failure',
     NOT_FOUND: 'Not found',
     REQUEST_BODY_ERR: 'Body is invalid',
@@ -95,7 +95,7 @@ const MSG = {
     BODY_IS_NEEDED: 'Body is needed',
     ID_IS_NEEDED: 'Id is need',
     DATA_IS_NOT_EXISTED: 'Data is not existed',
-    CONFLICT: 'Data is conflict'
+    CONFLICT: 'Data is conflict',
 }
 
 const MANAGER = {
@@ -108,10 +108,10 @@ const API_VERSION = {
     V2: 'v2',
 }
 
-const ROUTER =  {
-    AUTH: 'auth',
+const ROUTER = {
+    AUTH: 'oauth2',
     USER: 'user',
-    PROFILE: 'profile'
+    PROFILE: 'profile',
 }
 
 const PATHS = {
@@ -127,7 +127,7 @@ const PATHS = {
 
 const TAGS = {
     USER: 'user',
-    AUTH: 'auth',
+    AUTH: 'oauth2',
     ONLINE_PLAYER: 'online-player',
     FRIEND_REQUEST: 'friend',
     RANK: 'rank',

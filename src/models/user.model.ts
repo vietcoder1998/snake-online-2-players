@@ -12,6 +12,7 @@ export default class User {
         username?: string,
         password?: string,
         email?: string,
+        roleId?: number,
         token?: string,
         ban?: number
     ) {
@@ -20,7 +21,7 @@ export default class User {
         this.password = password
         this.email = email
         this.token = token
-        this.roleId = this.roleId
+        this.roleId = roleId
         this.ban = ban || 0
     }
 }

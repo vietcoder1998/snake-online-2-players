@@ -17,7 +17,7 @@ const specsOptions: swaggerJSDoc.Options = {
         title: 'User',
         tags: [
             { name: TAGS.USER, description: 'Everything about user' },
-            { name: TAGS.AUTH, description: 'Setup Token and auth' },
+            { name: TAGS.AUTH, description: 'Setup Token and oauth2' },
             { name: TAGS.ONLINE_PLAYER, description: 'All of online user' },
         ],
         schemes: ['http', 'https'],
@@ -299,15 +299,10 @@ const specsOptions: swaggerJSDoc.Options = {
                 },
             },
             // AUTH API
-            '/auth/login': {
+            '/oauth2/login': {
                 post: {
                     tags: [TAGS.AUTH],
                     description: 'Login',
-                    security: [
-                        {
-                            token: 'token',
-                        },
-                    ],
                     parameters: [
                         {
                             example: {
@@ -328,7 +323,7 @@ const specsOptions: swaggerJSDoc.Options = {
                     },
                 },
             },
-            '/auth/register': {
+            '/oauth2/register': {
                 post: {
                     tags: [TAGS.AUTH],
                     description: 'Register',

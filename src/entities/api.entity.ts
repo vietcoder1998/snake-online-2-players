@@ -21,7 +21,7 @@ export default class ApiEntity {
         type: 'varchar',
         nullable: true,
     })
-    name: string
+    path: string
 
     @Column({
         type: 'text',
@@ -45,7 +45,7 @@ export default class ApiEntity {
     // Many to many with role
     @ManyToMany((role) => RoleEntity, (role) => role.apis, {
         onDelete: 'NO ACTION',
-        onUpdate: 'NO ACTION',
+        onUpdate: 'CASCADE',
     })
     @JoinTable({ name: 'api_role' })
     roles: RoleEntity[]

@@ -3,11 +3,13 @@ import {
     Entity,
     JoinTable,
     ManyToMany,
+    ManyToOne,
     PrimaryGeneratedColumn,
 } from 'typeorm'
 import { EntityTypes } from '../enums/entity.enum'
 import Role from '../models/role.model'
 import ApiEntity from './api.entity'
+import UserEntity from './user.entity'
 
 @Entity(EntityTypes.ROLE)
 export default class RoleEntity extends Role {
@@ -31,4 +33,12 @@ export default class RoleEntity extends Role {
         onDelete: 'CASCADE',
     })
     apis: ApiEntity[]
+
+    @ManyToOne((user) => UserEntity, (user) => user.role, {
+        cascade: true,
+        createForeignKeyConstraints: true,
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+    })
+    users: UserEntity[]
 }

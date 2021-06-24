@@ -26,5 +26,5 @@ export enum CommonCode {
     SUCCESS = 200,
     NOT_FOUND = 404,
     CONFLICT = 409,
-    ERR = 500,
+    UNKNOWN = 500,
 }

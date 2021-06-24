@@ -1,10 +1,12 @@
 import { getRepository } from 'typeorm'
 import BaseService from '../base/services'
 import { ErrorException, ResponseData } from '../config/response'
+import ProfileEntity from '../entities/profile.entity'
 import UserEntity from '../entities/user.entity'
-import { CommonCode } from '../enums/code.enum'
-import { UserErrorMessage } from '../enums/message.enum'
+import { CommonCode, UserErrorCode } from '../enums/code.enum'
+import { CommonErrorMessage, UserErrorMessage } from '../enums/message.enum'
 import { PromiseRepository } from '../interfaces'
+import Profile from '../models/profile.model'
 import User from '../models/user.model'
 
 export default class UserService extends BaseService {
@@ -36,15 +38,32 @@ export default class UserService extends BaseService {
     public async create(user: User): PromiseRepository {
         try {
             const userRepository = getRepository(UserEntity)
-            const userEntity = new UserEntity(
-                null,
-                user.username,
-                user.password,
-                user.email,
-                user.token
-            )
-            const res = await userRepository.save(userEntity)
-            return new ResponseData(res)
+            const profileRepo = getRepository(ProfileEntity)
+            const exUser = await userRepository.findOne({
+                username: user.username,
+            })
+            if (exUser) {
+                return new ErrorException(
+                    UserErrorMessage.CONFLICT,
+                    CommonCode.CONFLICT,
+                    CommonErrorMessage.CONFLICT
+                )
+            } else {
+                const userEntity = new UserEntity(
+                    null,
+                    user.username,
+                    user.password,
+                    user.email,
+                    1
+                )
+
+                const profile = new Profile(user.username, 0, "_", "_", new Date().getTime())
+                const res0 = await profileRepo.save(profile)
+
+                userEntity.profile = res0
+                const res = await userRepository.save(userEntity)
+                return new ResponseData(res)
+            }
         } catch (error) {
             return new ErrorException(error)
         }
@@ -75,13 +94,14 @@ export default class UserService extends BaseService {
         }
     }
 
-    public async getList(page?: number, count?: number) {
+    public async getList(page?: number, size?: number): PromiseRepository {
         try {
             const res = await getRepository(UserEntity).findAndCount({
-                skip: page,
-                take: count,
+                skip: page || 0,
+                take: size || 0,
             })
-            return new ErrorException(resizeBy)
+
+            return new ResponseData(res[0], page, size, res[1])
         } catch (error) {
             return new ErrorException(error)
         }

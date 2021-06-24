@@ -41,11 +41,11 @@ export class ResponseData {
 
     constructor(
         data?: any,
-        code?: number,
-        msg?: string,
         pi?: number,
         ps?: number,
-        total?: number
+        total?: number,
+        msg?: string,
+        code?: number
     ) {
         this.data = data
         this.code = code || 200

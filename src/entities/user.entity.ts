@@ -29,25 +29,25 @@ export default class UserEntity extends User {
     password?: string
 
     @Column({
-        type: 'varchar',
-        nullable: false,
+        type: 'bigint',
+        nullable: true,
     })
     createdDate?: number
 
     @Column({
         type: 'varchar',
-        nullable: false,
+        nullable: true,
     })
     token?: string
 
     @Column({
         type: 'varchar',
-        nullable: false,
+        nullable: true,
     })
     ban?: number
     @Column({
         type: 'varchar',
-        nullable: false,
+        nullable: true,
     })
     active?: number
 
@@ -67,10 +67,10 @@ export default class UserEntity extends User {
         username?: string,
         password?: string,
         email?: string,
+        roleId?: number,
         token?: string,
-        ban?: number,
-        active?: number
+        ban?: number
     ) {
-        super(id, username, password, email, token, ban)
+        super(id, username, password, email, roleId, token, ban)
     }
 }
