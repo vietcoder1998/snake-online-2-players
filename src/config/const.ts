@@ -137,11 +137,11 @@ const TAGS = {
 
 const ENTITIES = {
     USER: 'users',
-    PROFILE: 'profiles',
+    PROFILE: 'profile',
     ONLINE_PLAYER: 'online_players',
     MESSAGES: 'messages',
     ROOMS: 'rooms',
-    CHAT_USERS: 'chat_users'
+    CHAT_USERS: 'chat_users',
 }
 
 const EGO_API = 'http://id.8am.us'

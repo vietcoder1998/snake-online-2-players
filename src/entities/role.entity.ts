@@ -7,7 +7,7 @@ import {
     PrimaryGeneratedColumn,
 } from 'typeorm'
 import { EntityTypes } from '../enums/entity.enum'
-import Role from '../models/role.model'
+import Role from '../dto/role.model'
 import ApiEntity from './api.entity'
 import UserEntity from './user.entity'
 

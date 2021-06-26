@@ -1,6 +1,6 @@
 import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm'
 import { ENTITIES } from '../config/const'
-import ProfileModel from '../models/profile.model'
+import ProfileModel from '../dto/profile.model'
 import UserEntity from './user.entity'
 
 @Entity(ENTITIES.PROFILE)

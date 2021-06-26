@@ -10,13 +10,12 @@ export default class Profile {
         name?: string,
         state?: number,
         avatarUrl?: string,
-        coverUrl?: string,
-        createdDate?: number
+        coverUrl?: string
     ) {
         this.name = name
         this.state = state
         this.avatarUrl = avatarUrl
         this.coverUrl = coverUrl
-        this.createdDate = createdDate
+        this.createdDate = new Date().getTime()
     }
 }

@@ -7,9 +7,11 @@ import {
     PrimaryGeneratedColumn,
 } from 'typeorm'
 import { EntityTypes } from '../enums/entity.enum'
-import User from '../models/user.model'
+import User from '../dto/user.model'
 import ProfileEntity from './profile.entity'
 import RoleEntity from './role.entity'
+import AccountType from '../dto/account-type'
+import AccountTypeEntity from './account-type'
 
 @Entity(EntityTypes.USER)
 export default class UserEntity extends User {
@@ -24,7 +26,7 @@ export default class UserEntity extends User {
 
     @Column({
         type: 'varchar',
-        nullable: false,
+        nullable: true,
     })
     password?: string
 
@@ -62,15 +64,24 @@ export default class UserEntity extends User {
     @JoinColumn({ name: 'profileId' })
     profile: ProfileEntity
 
+    @ManyToOne((type) => AccountTypeEntity, (accountType) => accountType.id, {
+        cascade: false,
+        onDelete: 'NO ACTION',
+        onUpdate: 'RESTRICT',
+    })
+    @JoinColumn({ name: 'accountTypeId' })
+    accountType?: AccountTypeEntity
+
     constructor(
         id?: number,
         username?: string,
         password?: string,
         email?: string,
         roleId?: number,
+        accountType?: number,
         token?: string,
         ban?: number
     ) {
-        super(id, username, password, email, roleId, token, ban)
+        super(id, username, password, email, roleId, accountType, ban, token)
     }
 }

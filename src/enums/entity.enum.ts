@@ -8,4 +8,5 @@ export enum EntityTypes {
     FUNCTION = 'function',
     API = 'api',
     METHOD = 'method',
+    ACCOUNT_TYPE = 'account_type',
 }

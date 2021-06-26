@@ -11,11 +11,12 @@ export default class Oauth2 {
         username: string,
         password: string,
         id: number,
-        roleId: number
+        roleId: number,
+        type?: number
     ): string {
         const time = new Date().getTime().toString()
         const token = jwtk.sign(
-            { username, password, id, time, roleId },
+            { username, password, id, time, roleId, type },
             process.env.SECRET
         )
         return token

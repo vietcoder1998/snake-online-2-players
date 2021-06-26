@@ -348,6 +348,55 @@ const specsOptions: swaggerJSDoc.Options = {
                     },
                 },
             },
+            '/oauth2/th3/login': {
+                post: {
+                    tags: [TAGS.AUTH],
+                    description: 'Login',
+                    parameters: [
+                        {
+                            example: {
+                                email: 'user1',
+                                token: '',
+                                accountType: '',
+                            },
+                            in: 'body',
+                            name: 'body',
+                        },
+                    ],
+                    responses: {
+                        200: {
+                            description: 'success',
+                        },
+                        404: {
+                            description: 'not found',
+                        },
+                    },
+                },
+            },
+            '/oauth2/th3/register': {
+                post: {
+                    tags: [TAGS.AUTH],
+                    description: 'Login',
+                    parameters: [
+                        {
+                            example: {
+                                username: 'user1',
+                                password: 'qw123#.',
+                            },
+                            in: 'body',
+                            name: 'body',
+                        },
+                    ],
+                    responses: {
+                        200: {
+                            description: 'success',
+                        },
+                        404: {
+                            description: 'not found',
+                        },
+                    },
+                },
+            },
             //Online User Api
             '/online-player/{user_id}': {
                 get: {

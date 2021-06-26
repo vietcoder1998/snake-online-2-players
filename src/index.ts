@@ -12,6 +12,7 @@ import PathName from './enums/path.enum'
 import specs from './swagger'
 import { ip } from './utils/ip'
 import 'reflect-metadata'
+import { Req, Res } from './interfaces'
 
 export default class ExpressApplicationService {
     private application: Express
@@ -43,11 +44,23 @@ export default class ExpressApplicationService {
         this.application.use(PathName.USER, this.userController.router)
         this.application.use(PathName.OAUTH2, this.oauthController.router)
 
+        // view
+        this.application.get('/', (req: Req, res: Res) => {
+            res.sendFile(__dirname + '/public/index.html')
+        })
+
         //@ts-ignore
         this.application.use(
             '/api-docs',
             swaggerUi.serve,
             swaggerUi.setup(specs)
+        )
+        this.application.use(
+            (err: Error, req: Req, res: Res, next: express.NextFunction) => {
+                if (err) {
+                    res.status(403).send('Api not found')
+                }
+            }
         )
         this.server.listen(process.env.PORT, () => {
             console.log(`start -> \x1b[32m http://${ip + process.env.PORT}`)

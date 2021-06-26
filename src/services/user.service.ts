@@ -6,8 +6,8 @@ import UserEntity from '../entities/user.entity'
 import { CommonCode, UserErrorCode } from '../enums/code.enum'
 import { CommonErrorMessage, UserErrorMessage } from '../enums/message.enum'
 import { PromiseRepository } from '../interfaces'
-import Profile from '../models/profile.model'
-import User from '../models/user.model'
+import Profile from '../dto/profile.model'
+import User from '../dto/user.model'
 
 export default class UserService extends BaseService {
     public async get(userId?: string): PromiseRepository {
@@ -57,7 +57,7 @@ export default class UserService extends BaseService {
                     1
                 )
 
-                const profile = new Profile(user.username, 0, "_", "_", new Date().getTime())
+                const profile = new Profile(user.username, 0, '_', '_')
                 const res0 = await profileRepo.save(profile)
 
                 userEntity.profile = res0

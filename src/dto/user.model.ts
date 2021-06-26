@@ -5,6 +5,7 @@ export default class User {
     email?: string
     token?: string
     roleId?: number
+    accountTypeId?: number
     ban?: number
 
     constructor(
@@ -13,8 +14,9 @@ export default class User {
         password?: string,
         email?: string,
         roleId?: number,
-        token?: string,
-        ban?: number
+        accountTypeId?: number,
+        ban?: number,
+        token?: string
     ) {
         this.id = id
         this.username = username
@@ -22,6 +24,7 @@ export default class User {
         this.email = email
         this.token = token
         this.roleId = roleId
+        this.accountTypeId = accountTypeId
         this.ban = ban || 0
     }
 }

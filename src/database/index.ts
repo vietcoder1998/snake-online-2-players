@@ -1,6 +1,8 @@
 import 'metadata'
 import { Connection, createConnections } from 'typeorm'
 import { MANAGER } from '../config/const'
+import AccountType from '../dto/account-type'
+import AccountTypeEntity from '../entities/account-type'
 import ApiEntity from '../entities/api.entity'
 import MethodEntity from '../entities/method.entity'
 import ModuleEntity from '../entities/module.entity'
@@ -44,6 +46,7 @@ const migrateDataBase = async function () {
                 MethodEntity,
                 ModuleEntity,
                 ApiEntity,
+                AccountTypeEntity,
             ],
             synchronize: true,
             logging: false,
